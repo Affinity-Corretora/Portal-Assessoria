@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Portal de Assessoria Affinity</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+:root{--gold:#C9913A;--gold-bg:#fdf3e7;--gold-dark:#a8731e;--purple:#4A2050;--purple-bg:#f5eef8;--purple-light:#ede0f2}
+body{background:#f4f4f6;min-height:100vh;font-size:12px}
+.portal-header{background:#fff;padding:0.7rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid #eee;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.portal-logo{display:flex;align-items:center;gap:12px}
+.portal-logo-icon{width:40px;height:40px;border-radius:8px;background:var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.portal-logo-icon i{font-size:22px;color:#fff}
+.portal-logo-text h1{font-size:16px;font-weight:700;color:#fff;line-height:1.2}
+.portal-logo-text p{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
+.portal-badge{font-size:11px;font-weight:700;color:var(--purple);background:#fff;border:1.5px solid var(--purple);padding:4px 12px;border-radius:20px;white-space:nowrap;flex-shrink:0;display:none}
+.nav-tabs{display:flex;border-bottom:2px solid var(--purple-light);background:#fff;position:sticky;top:0;z-index:20;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.nav-tab{flex:1;padding:12px 16px;font-size:13px;font-weight:700;color:var(--purple);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;text-align:center;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.nav-tab i{font-size:15px}
+.nav-tab.active{border-bottom-color:var(--gold);color:var(--gold)}
+.nav-tab:hover:not(.active){background:var(--gold-bg)}
+.section{display:none;padding:1.25rem;max-width:960px;margin:0 auto}
+.section.active{display:block}
+.filter-bar{background:#fff;border-radius:12px;padding:.875rem 1.1rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.filter-label{font-size:11px;font-weight:700;color:var(--purple);display:block;margin-bottom:8px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:5px 14px;border-radius:20px;font-size:12px;cursor:pointer;border:1.5px solid var(--purple);background:#fff;color:var(--purple);font-weight:700;transition:all .15s;white-space:nowrap}
+.chip.active{background:var(--purple);color:#fff}
+.chip:hover:not(.active){background:var(--purple-bg)}
+.comm-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.07);margin-bottom:1rem}
+.comm-card-header{background:var(--purple);padding:10px 16px;display:flex;align-items:center;gap:8px}
+.comm-card-header span{font-size:13px;font-weight:700;color:#fff}
+.comm-card-header .sub{font-size:11px;color:rgba(255,255,255,.6);margin-left:4px}
+.comm-table{width:100%;border-collapse:collapse;font-size:12px;min-width:520px}
+.comm-table th{background:var(--purple);color:rgba(255,255,255,.85);padding:8px 10px;text-align:center;font-size:11px;font-weight:700;border-bottom:2px solid var(--gold)}
+.comm-table th.left{text-align:left;padding-left:14px}
+.comm-table td{padding:9px 10px;border-bottom:.5px solid #eee;text-align:center;font-size:12px;color:#111}
+.comm-table td.left{text-align:left;font-weight:700;color:var(--purple);padding-left:14px}
+.comm-table td.total{font-weight:700;color:var(--gold-dark);font-size:13px}
+.comm-table tr:last-child td{border-bottom:none}
+.comm-table tr:nth-child(even) td{background:var(--gold-bg)}
+.pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+.pill-pme{background:#e8f4fd;color:#1565C0}.pill-pf{background:#e8f8ee;color:#2E7D32}.pill-pj{background:#fdf3e7;color:#a8731e}.pill-qc{background:#f0e8ef;color:#7B3A6E}
+.vit-pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:#e8f8ee;color:#2E7D32}
+.dash{color:#ccc}
+.comm-note{font-size:11px;color:#666;padding:8px 14px;background:var(--gold-bg);display:flex;align-items:flex-start;gap:6px}
+.comm-note i{color:var(--gold);flex-shrink:0;margin-top:1px;font-size:13px}
+.comm-footer{font-size:11px;color:#555;padding:10px 14px;background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.07);display:flex;align-items:center;gap:6px}
+.comm-footer i{color:var(--purple)}
+
+/* Corretor ID card */
+.corretor-card{background:#fff;border-radius:12px;padding:1rem 1.1rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,.07);border-left:4px solid var(--gold)}
+.corretor-head{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--purple);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--purple-light)}
+.corretor-head i{color:var(--gold);font-size:15px}
+.corretor-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cf{display:flex;flex-direction:column;gap:3px}
+.cf.full{grid-column:1/-1}
+.cf label{font-size:11px;font-weight:700;color:var(--purple)}
+.cf input{border:1.5px solid #ddd;border-radius:8px;padding:8px 12px;font-size:13px;font-family:Arial,sans-serif;background:#fff;color:#111;width:100%;transition:border .15s}
+.cf input:focus{outline:none;border-color:var(--gold)}
+.cf input.error{border-color:#c62828;background:#fff8f8}
+.ff input.error,.ci.error{border-color:#c62828!important;background:#fff8f8!important}
+.doc-item.missing{background:#fff8f8;border-left:3px solid #c62828;padding-left:8px;margin-left:-8px;border-bottom-color:#f0d5d5}
+.up-lbl.missing{border-color:#c62828;color:#c62828}
+
+.empty-state{text-align:center;padding:3rem 1rem;color:#888;background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.empty-state i{font-size:36px;display:block;margin-bottom:10px;color:var(--gold)}
+.op-label{display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap}
+.op-badge-pill{padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;background:var(--gold);color:#fff}
+.op-title{font-size:15px;font-weight:700;color:var(--purple)}
+.doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.cat-card{background:#fff;border-radius:12px;padding:1rem 1.1rem;box-shadow:0 1px 3px rgba(0,0,0,.07);border-top:3px solid var(--gold)}
+.extra-section{margin-top:22px}
+.extra-section-title{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
+.extra-section-title::before,.extra-section-title::after{content:'';flex:1;height:1px;background:#e0d5ea}
+.cat-head{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--purple);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--purple-light)}
+.cat-head i{font-size:15px;color:var(--gold)}
+.tag-obrig{font-size:10px;padding:2px 6px;border-radius:10px;background:var(--gold-bg);color:var(--gold-dark);margin-left:4px;font-weight:700}
+.doc-list{list-style:none}
+.doc-item{padding:7px 0;border-bottom:.5px solid #f0f0f0}
+.doc-item:last-child{border-bottom:none}
+.doc-row{display:flex;align-items:flex-start;gap:8px}
+.doc-icon{font-size:13px;color:var(--gold);flex-shrink:0;margin-top:2px}
+.doc-name{flex:1;font-size:12px;color:#222;line-height:1.45}
+.doc-chk{width:19px;height:19px;border-radius:50%;border:2px solid var(--gold);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;margin-top:1px}
+.doc-chk.on{background:var(--gold);border-color:var(--gold)}
+.doc-chk.on::after{content:"✓";font-size:10px;color:#fff;font-weight:700}
+.doc-actions{display:flex;align-items:center;gap:6px;margin-top:5px;padding-left:21px;flex-wrap:wrap}
+.dl-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 11px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid;background:#fff;transition:all .15s;text-decoration:none}
+.dl-pdf{color:#c62828;border-color:rgba(198,40,40,.3)}.dl-pdf:hover{background:#c62828;color:#fff}
+.dl-word{color:#1565C0;border-color:rgba(21,101,192,.3)}.dl-word:hover{background:#1565C0;color:#fff}
+.dl-excel{color:#2E7D32;border-color:rgba(46,125,50,.3)}.dl-excel:hover{background:#2E7D32;color:#fff}
+.up-lbl{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--purple);cursor:pointer;padding:4px 11px;border-radius:6px;border:1.5px dashed var(--purple);background:#fff}
+.up-lbl:hover{background:var(--purple-bg)}
+.up-lbl input{display:none}
+.doc-campo-input{border:1.5px solid #ddd;border-radius:6px;padding:6px 10px;font-size:12px;font-family:Arial,sans-serif;background:#fff;color:#111;width:100%;max-width:340px;transition:border .15s}
+.doc-campo-input:focus{outline:none;border-color:var(--gold)}
+.dl-note{display:flex;align-items:center;gap:4px;font-size:10.5px;color:var(--gold-dark);font-style:italic;margin:3px 0 2px;padding-left:1px}
+.f-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:2px 8px;border-radius:20px;background:var(--gold-bg);color:var(--gold-dark)}
+.f-rm{cursor:pointer;color:var(--gold);margin-left:2px}
+.proc-btn{background:#f0ebf5;border:1.5px solid #d0c0dc;color:var(--purple);border-radius:20px;padding:6px 14px;font-size:12px;font-family:Arial,sans-serif;cursor:pointer;display:flex;align-items:center;gap:5px;transition:.2s}
+.proc-btn.proc-ativo{background:var(--purple);color:#fff;border-color:var(--purple)}
+.add-doc-btn{display:flex;align-items:center;gap:5px;margin-top:8px;font-size:11px;color:var(--purple);cursor:pointer;background:none;border:none;font-family:Arial,sans-serif;padding:0}
+.info-box{margin-bottom:.75rem;padding:8px 12px;border-radius:8px;background:var(--purple-bg);font-size:11px;color:var(--purple);display:flex;align-items:flex-start;gap:7px;line-height:1.5}
+.info-box i{color:var(--gold);flex-shrink:0;margin-top:1px;font-size:13px}
+.warn-box{margin-bottom:.75rem;padding:8px 12px;border-radius:8px;background:#fff3e0;font-size:11px;color:#bf360c;display:flex;align-items:flex-start;gap:7px;line-height:1.5}
+.warn-box i{color:#E65100;flex-shrink:0;margin-top:1px;font-size:13px}
+.footer-doc{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:1rem;padding:1rem 1.1rem;background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.prog-wrap{display:flex;align-items:center;gap:10px;flex:1;min-width:180px}
+.prog-txt{font-size:12px;font-weight:700;color:var(--purple);white-space:nowrap}
+.prog-bar-bg{flex:1;background:var(--purple-light);border-radius:20px;height:6px;overflow:hidden}
+.prog-bar{height:100%;border-radius:20px;background:var(--gold);transition:width .3s}
+.btn-send{padding:9px 20px;border-radius:8px;background:var(--purple);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:Arial,sans-serif}
+.btn-send:hover{background:#3a1840}
+.btn-send:disabled{opacity:.5;cursor:not-allowed}
+
+/* Sending overlay */
+.sending-overlay{display:none;position:fixed;inset:0;background:rgba(74,32,80,.85);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.sending-overlay.open{display:flex}
+.sending-spinner{width:48px;height:48px;border:4px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sending-text{color:#fff;font-size:15px;font-weight:700}
+.success-icon{font-size:48px;color:var(--gold)}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-box{background:#fff;border-radius:14px;border:2px solid var(--purple);padding:1.5rem;width:440px;max-width:95vw;max-height:90vh;overflow-y:auto}
+.modal-handle{display:none;width:40px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 1rem}
+.modal-ttl{font-size:15px;font-weight:700;color:var(--purple);margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.modal-ttl i{color:var(--gold)}
+.mf{margin-bottom:10px}
+.mf label{font-size:11px;font-weight:700;color:var(--purple);display:block;margin-bottom:4px}
+.mf input,.mf textarea{width:100%;border-radius:8px;border:1.5px solid var(--gold);padding:8px 12px;font-size:13px;font-family:Arial,sans-serif;background:#fff;color:#111}
+.mf textarea{resize:none}
+.modal-preview{font-size:12px;color:#666;background:#f9fafb;border-radius:8px;padding:10px;margin:10px 0;line-height:1.8;max-height:130px;overflow-y:auto}
+.modal-note{font-size:11px;color:#666;background:var(--gold-bg);border-radius:8px;padding:8px 10px;margin-bottom:10px;display:flex;align-items:flex-start;gap:6px}
+.modal-note i{color:var(--gold);flex-shrink:0}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end}
+.btn-cancel{padding:7px 16px;border-radius:8px;border:1.5px solid var(--purple);background:#fff;color:var(--purple);font-size:13px;cursor:pointer;font-weight:700;font-family:Arial,sans-serif}
+.btn-confirm{padding:7px 18px;border-radius:8px;background:var(--purple);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif;display:flex;align-items:center;gap:6px}
+.btn-confirm:disabled{opacity:.5;cursor:not-allowed}
+
+/* Form cards */
+.form-card{background:#fff;border-radius:12px;padding:1rem 1.1rem;margin-top:.875rem;box-shadow:0 1px 3px rgba(0,0,0,.07);border-top:3px solid var(--purple)}
+.form-card-head{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--purple);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--purple-light)}
+.form-card-head i{color:var(--gold)}
+.fgt{font-size:10px;font-weight:700;color:var(--gold-dark);text-transform:uppercase;letter-spacing:.5px;margin:10px 0 6px;padding-bottom:4px;border-bottom:.5px solid var(--gold-bg)}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.ff{display:flex;flex-direction:column;gap:3px;margin-bottom:8px}
+.ff label{font-size:11px;font-weight:700;color:var(--purple)}
+.ff input{border:1.5px solid #ddd;border-radius:8px;padding:7px 12px;font-size:13px;font-family:Arial,sans-serif;background:#fff;color:#111;width:100%;transition:border .15s}
+.ff input:focus{outline:none;border-color:var(--gold)}
+.opcao-row{display:flex;gap:8px;margin:8px 0}
+.opcao-btn{flex:1;padding:8px;border-radius:8px;border:1.5px solid #ddd;background:#fff;color:#888;font-size:12px;font-weight:700;cursor:pointer;text-align:center;font-family:Arial,sans-serif;transition:all .15s}
+.opcao-btn.sel{border-color:var(--gold);background:var(--gold-bg);color:var(--gold-dark)}
+.cmt{width:100%;border-collapse:collapse;font-size:11px;margin:6px 0 10px}
+.cmt th{background:var(--purple);color:#fff;padding:5px 8px;text-align:center;font-size:10px}
+.cmt th.left{text-align:left}
+.cmt td{padding:5px 8px;border-bottom:.5px solid #eee;text-align:center;font-size:11px}
+.cmt td.left{text-align:left;color:#555}
+.cmt tr:last-child td{border-bottom:none}
+.cmt tr:nth-child(even) td{background:var(--gold-bg)}
+.cmt td.hi{font-weight:700;color:var(--gold-dark)}
+.form-actions{display:flex;gap:8px;margin-top:12px;justify-content:flex-end}
+.btn-clear{padding:7px 16px;border-radius:8px;border:1.5px solid #ddd;background:#fff;color:#666;font-size:12px;cursor:pointer;font-family:Arial,sans-serif}
+.btn-copy{padding:7px 18px;border-radius:8px;background:var(--gold);color:#fff;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif;display:flex;align-items:center;gap:5px}
+.copy-ok{font-size:11px;color:#2E7D32;margin-top:6px;text-align:right;display:none}
+
+/* Steps Unimed */
+.steps-card{background:#fff;border-radius:12px;padding:1rem 1.1rem;margin-bottom:.875rem;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.steps-head{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--purple);margin-bottom:1rem;padding-bottom:8px;border-bottom:1px solid var(--purple-light)}
+.steps-head i{color:var(--gold)}
+.step-item{display:flex;gap:12px;padding:10px 0;border-bottom:.5px solid #f0f0f0}
+.step-item:last-child{border-bottom:none}
+.step-num{width:26px;height:26px;border-radius:50%;background:var(--purple);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-body{flex:1}
+.step-title{font-size:12px;font-weight:700;color:var(--purple);margin-bottom:2px}
+.step-desc{font-size:11px;color:#666;line-height:1.5}
+.step-tag{display:inline-flex;align-items:center;gap:4px;margin-top:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+.tag-a{background:#fff3e0;color:#E65100}.tag-p{background:#e8f4e8;color:#2E7D32}.tag-c{background:var(--purple-bg);color:var(--purple)}
+.btn-site{display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:5px 12px;border-radius:6px;background:var(--purple);color:#fff;font-size:11px;font-weight:700;text-decoration:none}
+.com-card{background:var(--purple-bg);border-radius:12px;padding:1rem 1.1rem;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.com-head{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--purple);margin-bottom:.875rem;padding-bottom:8px;border-bottom:1px solid var(--purple-light)}
+.com-head i{color:var(--gold)}
+.ai{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:8px;margin-bottom:6px;font-size:12px;line-height:1.4}
+.ai:last-child{margin-bottom:0}
+.ai-gold{background:var(--gold-bg);border:1px solid rgba(201,145,58,.3)}.ai-gold i{color:var(--gold);flex-shrink:0}
+.ai-red{background:#fff3f3;border:1px solid rgba(200,0,0,.15)}.ai-red i{color:#c62828;flex-shrink:0}
+.ai-pur{background:#fff;border:1px solid var(--purple-light)}.ai-pur i{color:var(--purple);flex-shrink:0}
+.cv{font-size:18px;font-weight:700;color:var(--purple);margin:2px 0}
+.cv span{font-size:13px;font-weight:400;color:#666}
+
+/* ═══ MOBILE ═══ */
+@media(max-width:640px){
+  .portal-header{padding:.6rem 1rem}
+  .portal-badge{font-size:10px;padding:3px 9px}
+  .nav-tab{font-size:12px;padding:10px 8px}
+  .nav-tab i{display:none}
+  .section{padding:.875rem}
+  .comm-card-header .sub{display:none}
+  .comm-table{font-size:11px}
+  .comm-table th,.comm-table td{padding:6px 5px}
+  
+  .corretor-grid{grid-template-columns:1fr}
+  .doc-grid{grid-template-columns:1fr}
+  .footer-doc{flex-direction:column;gap:8px}
+  .btn-send{width:100%;justify-content:center}
+  .modal-overlay{align-items:flex-end}
+  .modal-box{border-radius:16px 16px 0 0;width:100%;max-height:88vh;border-left:none;border-right:none;border-bottom:none}
+  .modal-handle{display:block}
+  .modal-actions{flex-direction:row}
+  .btn-cancel{flex:1}.btn-confirm{flex:2;justify-content:center}
+  .mf input,.mf textarea,.ff input,.cf input{font-size:16px}
+  .form-actions{flex-direction:row;justify-content:stretch}
+  .btn-clear,.btn-copy{flex:1;justify-content:center}
+  .fg2{grid-template-columns:1fr}
+  .fg3{grid-template-columns:1fr}
+  .opcao-row{flex-direction:column;gap:6px}
+}
+</style>
+</head>
+<body>
+
+<!-- Sending overlay -->
+<div class="sending-overlay" id="sending-overlay">
+  <div class="sending-spinner" id="sending-spinner"></div>
+  <i class="ti ti-check success-icon" id="success-icon" style="display:none"></i>
+  <div class="sending-text" id="sending-text">Enviando...</div>
+</div>
+
+<div class="portal-header">
+  <img src="" alt="Affinity Corretora" style="height:42px">
+  <span class="portal-badge"><i class="ti ti-shield-check" style="font-size:11px;vertical-align:-1px;margin-right:3px"></i>Área do Corretor</span>
+</div>
+
+<div class="nav-tabs">
+  <div class="nav-tab active" data-tab="comissoes"><i class="ti ti-chart-bar"></i>Tabela de comissões</div>
+  <div class="nav-tab" data-tab="documentos"><i class="ti ti-files"></i>Documentos</div>
+</div>
+
+<!-- TAB COMISSÕES -->
+<div id="tab-comissoes" class="section active">
+  <div class="filter-bar">
+    <span class="filter-label"><i class="ti ti-filter" style="font-size:12px;vertical-align:-1px;margin-right:4px"></i>Operadora:</span>
+    <div class="chips" id="comm-chips">
+      <div class="chip active" data-comm="todas">Todas</div>
+      <div class="chip" data-comm="alice">Alice</div>
+      <div class="chip" data-comm="amil">Amil</div>
+      <div class="chip" data-comm="assim">Assim Saúde</div>
+      <div class="chip" data-comm="hapvida">Hapvida</div>
+      <div class="chip" data-comm="leve">Leve Saúde</div>
+      <div class="chip" data-comm="medsênior">MedSênior</div>
+      <div class="chip" data-comm="qualicorp">Qualicorp</div>
+      <div class="chip" data-comm="unimed">Seguros Unimed</div>
+    </div>
+  </div>
+  <div class="comm-card">
+    <div class="comm-card-header">
+      <i class="ti ti-star" style="font-size:15px;color:var(--gold)"></i>
+      <span>Agenciamento + Vitalício — Affinity Corretora</span>
+      <span class="sub">Multinotas</span>
+    </div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -1px"><table class="comm-table">
+      <thead><tr>
+        <th class="left">Operadora</th><th>Produto</th><th>Total</th>
+        <th>1ª</th><th>2ª</th><th>3ª</th><th>4ª</th><th>Vitalício</th>
+      </tr></thead>
+      <tbody id="comm-tbody"></tbody>
+    </table></div>
+    <div class="comm-note" id="comm-note-geral"><i class="ti ti-info-circle"></i><span>Vitalício: pago mensalmente enquanto o contrato estiver ativo e adimplente.</span></div>
+    <div class="comm-note" id="comm-note-assim" style="display:none"><i class="ti ti-info-circle"></i><span>Assim Saúde: tabela simplificada — exibe as 4 primeiras parcelas. PF 0-18: 5ª–9ª = 20%. PF 19+/Fam.: 5ª–7ª = 25%. PF Odonto: 4ª–14ª = 2%. PME: a partir da 4ª = 2% vitalício.</span></div>
+    <div class="comm-note" id="comm-note-qualicorp" style="display:none"><i class="ti ti-info-circle"></i><span>Qualicorp: a 1ª parcela representa o repasse do 2º mês, a 2ª o 13º mês, e a 3ª o 25º mês de vigência (não são meses seguidos). O total não inclui o vitalício de 3%, que é pago à parte a partir de então, igual para todas as categorias.</span></div>
+  </div>
+  <div class="comm-footer"><i class="ti ti-mail"></i><span>Dúvidas? <strong>assessoria@affinitycorretora.com.br</strong></span></div>
+</div>
+
+<!-- TAB DOCUMENTOS -->
+<div id="tab-documentos" class="section">
+
+  <!-- Identificação do corretor -->
+  <div class="corretor-card">
+    <div class="corretor-head"><i class="ti ti-user-circle"></i>Identificação do corretor</div>
+    <div class="corretor-grid">
+      <div class="cf"><label>Código Sis *</label><input type="text" id="cor_sis" placeholder="Ex: 12345"></div>
+      <div class="cf"><label>Nome completo *</label><input type="text" id="cor_nome" placeholder="Nome do corretor"></div>
+      <div class="cf"><label>Telefone *</label><input type="tel" id="cor_tel" placeholder="(00) 00000-0000"></div>
+      <div class="cf"><label>E-mail *</label><input type="email" id="cor_email" placeholder="email@empresa.com" autocomplete="email"></div>
+      <div class="cf"><label>Supervisor *</label><input type="text" id="cor_supervisor" placeholder="Nome do supervisor"></div>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <span class="filter-label"><i class="ti ti-filter" style="font-size:12px;vertical-align:-1px;margin-right:4px"></i>Operadora:</span>
+    <div class="chips" id="doc-chips">
+      <div class="chip active" data-op="">Selecione...</div>
+      <div class="chip" data-op="alice">Alice</div>
+      <div class="chip" data-op="amil">Amil</div>
+      <div class="chip" data-op="assim_saude">Assim Saúde</div>
+      <div class="chip" data-op="hapvida">Hapvida</div>
+      <div class="chip" data-op="leve_saude">Leve Saúde</div>
+      <div class="chip" data-op="medsênior">MedSênior</div>
+      <div class="chip" data-op="qualicorp">Qualicorp</div>
+      <div class="chip" data-op="seguros_unimed">Seguros Unimed</div>
+    </div>
+  </div>
+
+  <div id="doc-content">
+    <div class="empty-state"><i class="ti ti-hand-click"></i><p>Selecione uma operadora para ver os documentos necessários</p></div>
+  </div>
+
+  <div id="doc-footer" style="display:none">
+    <div class="footer-doc" style="flex-direction:column;align-items:stretch;gap:10px">
+      <div class="cf full">
+        <label style="font-size:11px;font-weight:700;color:var(--purple);display:block;margin-bottom:4px"><i class="ti ti-notes" style="font-size:12px;vertical-align:-1px;margin-right:4px"></i>Observações (opcional)</label>
+        <textarea id="notas-corretor" rows="2" placeholder="Alguma observação adicional sobre o processo..." style="border:1.5px solid #ddd;border-radius:8px;padding:8px 12px;font-size:13px;font-family:Arial,sans-serif;background:#fff;color:#111;width:100%;resize:vertical;transition:border .15s" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='#ddd'"></textarea>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div class="prog-wrap">
+          <span class="prog-txt" id="prog-txt">0 de 0 confirmados</span>
+          <div class="prog-bar-bg"><div class="prog-bar" id="prog-bar" style="width:0%"></div></div>
+        </div>
+        <button class="btn-send" id="btn-send"><i class="ti ti-send"></i>Enviar processo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal confirmação -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <span class="modal-handle"></span>
+    <p class="modal-ttl"><i class="ti ti-send"></i>Confirmar envio do processo</p>
+    <div class="modal-preview" id="modal-preview"></div>
+    <div class="modal-note"><i class="ti ti-info-circle"></i><span>Será enviado automaticamente para <strong>assessoria@affinitycorretora.com.br</strong> e uma cópia para o e-mail do corretor.</span></div>
+    <div class="mf"><label>Observações (opcional)</label><textarea id="e-obs" rows="2" placeholder="Alguma observação adicional..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="btn-cancel">Cancelar</button>
+      <button class="btn-confirm" id="btn-confirm"><i class="ti ti-send"></i>Confirmar envio</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── CONFIG CLOUDINARY ───────────────────────────────────────────────────────
+var CLOUDINARY_CLOUD    = "dlic6x4bt";
+var CLOUDINARY_PRESET   = "affinity_portal_pub";
+
+async function uploadArquivosCloudinary(){
+  var links = [];
+  var d = dados[filtroDoc];
+  // Montar mapa id → nome do documento
+  var nomeDoc = {};
+  if(d && d.cats){
+    d.cats.forEach(function(cat){
+      cat.docs.forEach(function(doc,i){
+        nomeDoc[cat.id+"_"+i] = doc.t;
+      });
+    });
+  }
+  function lerArquivoBase64(f, tentativas){
+    tentativas = tentativas||2;
+    return new Promise(function(resolve, reject){
+      function tentar(restam){
+        var reader = new FileReader();
+        reader.onload = function(){ resolve(reader.result); };
+        reader.onerror = function(){
+          if(restam>1){ setTimeout(function(){ tentar(restam-1); }, 400); }
+          else{ reject(new Error("Não foi possível ler o arquivo — verifique se ele terminou de baixar no aparelho (ex: iCloud/nuvem) e tente anexar novamente")); }
+        };
+        reader.readAsDataURL(f);
+      }
+      tentar(tentativas);
+    });
+  }
+  var ids = Object.keys(arquivos);
+  for(var i=0;i<ids.length;i++){
+    var id = ids[i];
+    var files = arquivos[id]||[];
+    var label = nomeDoc[id] || id; // nome do documento ou fallback para o id
+    for(var j=0;j<files.length;j++){
+      var f = files[j];
+      var ext = f.name.split(".").pop().toLowerCase();
+      var isPdf = (ext==="pdf");
+      var isZip = (ext==="zip");
+      var imgExts = ["jpg","jpeg","png","gif","webp","bmp","svg"];
+      // image/upload só aceita imagem e pdf (Cloudinary consegue tratá-los como "imagem");
+      // zip, docx/xlsx e outros formatos precisam ir por raw/upload — o Cloudinary rejeita
+      // zip no endpoint de imagem com erro "Unsupported ZIP file"
+      var useImageEndpoint = isPdf || imgExts.indexOf(ext)>=0;
+      var resourceType = useImageEndpoint ? "image" : "raw";
+      try{
+        // Converter para base64 igual ao formulário de boletos (com nova tentativa automática em caso de falha)
+        var base64 = await lerArquivoBase64(f);
+        // Criar novo arquivo com nome seguro (sem barras ou caracteres inválidos)
+        var safeName = f.name.replace(/[/\\:*?"<>|]/g, "_");
+        var safeFile = new File([f], safeName, {type: f.type});
+        var fd = new FormData();
+        fd.append("file", base64);
+        fd.append("upload_preset", CLOUDINARY_PRESET);
+        if(resourceType==="raw"){
+          // Para raw, o Cloudinary não detecta a extensão sozinho (viemos de base64, sem nome de arquivo real).
+          // Precisamos definir o public_id JÁ com a extensão no upload, ou o arquivo fica salvo sem extensão.
+          var baseName = safeName.replace(/\.[^.]+$/, "");
+          var uniqueId = Date.now()+"_"+Math.random().toString(36).slice(2,8);
+          fd.append("public_id", baseName+"_"+uniqueId+"."+ext);
+        }
+        var r = await fetch("https://api.cloudinary.com/v1_1/"+CLOUDINARY_CLOUD+"/"+resourceType+"/upload",{method:"POST",body:fd});
+        if(!r.ok){ var errData=await r.json(); throw new Error("Cloudinary "+r.status+": "+(errData.error&&errData.error.message||r.statusText)); }
+        var data = await r.json();
+        if(data.secure_url){
+          var url = data.secure_url;
+          if(isPdf && !url.includes("fl_attachment")){
+            url = url.replace("/upload/", "/upload/fl_attachment/");
+          }
+          // Garantir extensão correta somente para RAW (docx/xlsx etc — Cloudinary não detecta sozinho, pois enviamos via base64 sem nome de arquivo real).
+          // Para image/pdf/zip o Cloudinary já detecta o formato real do conteúdo e devolve a extensão certa —
+          // forçar aqui causava duplicidade (ex: .jpg.jpeg) quando o nome original não batia com o formato detectado.
+          if(resourceType==="raw" && !url.toLowerCase().endsWith("."+ext)){ url = url + "." + ext; }
+          links.push(label+" → "+url);
+        } else {
+          links.push(label+" → (erro: sem URL)");
+        }
+      }catch(err){
+        links.push(label+" → (erro: "+err.message+")");
+      }
+    }
+  }
+  return links.join("\n");
+}
+
+// ─── CONFIG EMAILJS ──────────────────────────────────────────────────────────
+var EMAILJS_PUBLIC_KEY  = "W7viIcFvtgkis4vqK";
+var EMAILJS_SERVICE_ID  = "service_gvedztq";
+var TEMPLATE_ASSESSORIA = "template_assessoria"; // EmailJS
+var TEMPLATE_CORRETOR   = "template_corretor";
+
+emailjs.init(EMAILJS_PUBLIC_KEY);
+
+// ─── BASE URL DOWNLOADS ───────────────────────────────────────────────────────
+var BASE = "https://hellanysouza-ai.github.io/portal-assessoria/docs/";
+var FILES = {
+  amil_anticorrupcao:   {url:BASE+"carta-anticorrupcao-amil.pdf",        label:"Carta Anticorrupção",    cls:"dl-pdf"},
+  amil_vinculacao:      {url:BASE+"termo-vinculacao-amil.docx",           label:"Termo de Vinculação",    cls:"dl-word"},
+  amil_formulario:      {url:BASE+"formulario-cadastro-amil.pdf",         label:"Formulário Cadastral",   cls:"dl-pdf"},
+  amil_desvinculacao:   {url:BASE+"termo-desvinculacao-amil.docx",        label:"Termo de Desvinculação", cls:"dl-word"},
+  assim_ficha:          {url:BASE+"ficha-cadastral-assim.xlsx",            label:"Ficha Cadastral",        cls:"dl-excel"},
+  assim_contrato:       {url:BASE+"contrato-modelo-pj-assim.docx",        label:"Contrato Modelo PJ",     cls:"dl-word"},
+  hapvida_confirmacao:  {url:BASE+"confirmacao-dados-bancarios-hapvida.docx",label:"Confirmação Bancária",cls:"dl-word"},
+  hapvida_agenciamento: {url:BASE+"carta-agenciamento-hapvida.docx",      label:"Carta Agenciamento",     cls:"dl-word"},
+  hapvida_checklist:    {url:BASE+"checklist-abertura-hapvida.xlsx",      label:"Checklist Abertura",     cls:"dl-excel"},
+  leve_pdf:             {url:BASE+"formulario-particionamento-leve.pdf",   label:"Formulário PDF",         cls:"dl-pdf"},
+  leve_doc:             {url:BASE+"formulario-particionamento-leve.docx",  label:"Formulário Word",        cls:"dl-word"},
+  leve_cadastramento:   {url:BASE+"formulario-cadastramento-leve.pdf",     label:"Formulário Cadastramento",cls:"dl-pdf"},
+  qc_ficha:             {url:BASE+"ficha-cadastro-qualicorp.xlsx",         label:"Ficha Cadastro Qualicorp", cls:"dl-excel"},
+  qc_ferramenta:        {url:BASE+"ficha-ferramenta-digital-qualicorp.xlsx",label:"Ficha Ferramenta Digital", cls:"dl-excel"},
+  qc_regime:             {url:BASE+"questionario-regime-tributario-qualicorp.docx",label:"Questionário Regime Tributário", cls:"dl-word"},
+  med_checklist:        {url:BASE+"checklist-medsênior.docx",             label:"Checklist MedSênior",    cls:"dl-word"}
+};
+
+// ─── COMISSÕES ────────────────────────────────────────────────────────────────
+var comissoes=[
+  {op:"alice", nome:"Alice",prod:"PME",tot:"260%",p1:"100%",p2:"100%",p3:"60%",p4:"–",vit:"1% vit."},
+  {op:"amil",     nome:"Amil",          prod:"PF Odonto",tot:"175%",p1:"100%",p2:"25%", p3:"25%", p4:"25%", vit:"–"},
+  {op:"amil",     nome:"Amil",          prod:"PME",      tot:"250%",p1:"100%",p2:"100%",p3:"50%", p4:"–",  vit:"2% vit."},
+  {op:"assim",    nome:"Assim Saúde",   prod:"PF 0-18",   tot:"250%",p1:"100%",p2:"15%", p3:"15%", p4:"20%", vit:"5×20%"},
+  {op:"assim",    nome:"Assim Saúde",   prod:"PF 19+/Fam.",tot:"275%",p1:"100%",p2:"25%", p3:"25%", p4:"25%", vit:"3×25%"},
+  {op:"assim",    nome:"Assim Saúde",   prod:"PF Odonto", tot:"120%",p1:"100%",p2:"10%", p3:"10%", p4:"–",   vit:"2% vit."},
+  {op:"assim",    nome:"Assim Saúde",   prod:"PME",       tot:"250%",p1:"100%",p2:"50%", p3:"100%",p4:"–",   vit:"2% vit."},
+  {op:"assim",    nome:"Assim Saúde",   prod:"PME Odonto",tot:"250%",p1:"100%",p2:"50%", p3:"100%",p4:"–",   vit:"2% vit."},
+  {op:"hapvida",  nome:"Hapvida",       prod:"PME",tot:"300%",p1:"100%",p2:"100%",p3:"100%",p4:"–",  vit:"2% vit."},
+  {op:"leve",     nome:"Leve Saúde",    prod:"PF", tot:"150%",p1:"100%",p2:"50%", p3:"–",   p4:"–",  vit:"2% vit."},
+  {op:"leve",     nome:"Leve Saúde",    prod:"PME",tot:"200%",p1:"100%",p2:"50%", p3:"25%", p4:"25%",vit:"2% vit."},
+  {op:"medsênior",nome:"MedSênior",     prod:"PF", tot:"170%",p1:"100%",p2:"70%", p3:"–",   p4:"–",  vit:"–"},
+  {op:"medsênior",nome:"MedSênior",     prod:"PME",tot:"170%",p1:"100%",p2:"70%", p3:"–",   p4:"–",  vit:"1% vit."},
+  {op:"qualicorp", nome:"Qualicorp",prod:"Premium",tot:"90%",p1:"30%",p2:"30%",p3:"30%",p4:"–",vit:"3% vit."},
+  {op:"qualicorp", nome:"Qualicorp",prod:"Prime",tot:"60%",p1:"20%",p2:"20%",p3:"20%",p4:"–",vit:"3% vit."},
+  {op:"qualicorp", nome:"Qualicorp",prod:"Plus",tot:"60%",p1:"20%",p2:"20%",p3:"20%",p4:"–",vit:"3% vit."},
+  {op:"qualicorp", nome:"Qualicorp",prod:"Gold",tot:"30%",p1:"10%",p2:"10%",p3:"10%",p4:"–",vit:"3% vit."},
+  {op:"unimed",   nome:"Seguros Unimed",prod:"PME",tot:"300%",p1:"100%",p2:"100%",p3:"100%",p4:"–",  vit:"2% vit."}
+];
+var filtroComm="todas";
+function renderComm(){
+  var rows=filtroComm==="todas"?comissoes:comissoes.filter(function(r){return r.op===filtroComm;});
+  var pc={"PME":"pill pill-pme","PME Médico":"pill pill-pme","PME Odonto":"pill pill-pme","PF":"pill pill-pf","PF Odonto":"pill pill-pf","PF 0-18":"pill pill-pf","PF 19+/Fam.":"pill pill-pf","PJ":"pill pill-pj","Emp":"pill pill-pj","Premium":"pill pill-qc","Prime":"pill pill-qc","Plus":"pill pill-qc","Gold":"pill pill-qc","Livre":"pill pill-qc"};
+  document.getElementById("comm-tbody").innerHTML=rows.map(function(r){
+    var vh=r.vit==="–"?"<span class=\"dash\">–</span>":r.vit==="Em breve"?"<span class=\"vit-pill\" style=\"background:#fff3dc;color:#b07800\">Em breve</span>":"<span class=\"vit-pill\">"+r.vit+"</span>";
+    var mkC=function(v){return v==="–"?"<span class=\"dash\">–</span>":v;};
+    return "<tr><td class=\"left\">"+r.nome+"</td><td><span class=\""+pc[r.prod]+"\">"+r.prod+"</span></td><td class=\"total\">"+r.tot+"</td><td>"+mkC(r.p1)+"</td><td>"+mkC(r.p2)+"</td><td>"+mkC(r.p3)+"</td><td>"+mkC(r.p4)+"</td><td>"+vh+"</td></tr>";
+  }).join("");
+}
+document.getElementById("comm-chips").addEventListener("click",function(e){
+  var c=e.target.closest(".chip");if(!c)return;
+  filtroComm=c.dataset.comm||"todas";
+  document.querySelectorAll("#comm-chips .chip").forEach(function(x){x.classList.remove("active");});
+  c.classList.add("active");renderComm();
+  var noteAssim=document.getElementById("comm-note-assim");
+  if(noteAssim)noteAssim.style.display=(filtroComm==="assim"||filtroComm==="todas")?"flex":"none";
+  var noteQC=document.getElementById("comm-note-qualicorp");
+  if(noteQC)noteQC.style.display=(filtroComm==="qualicorp"||filtroComm==="todas")?"flex":"none";
+});
+
+// ─── DOCUMENTOS ───────────────────────────────────────────────────────────────
+var dados={
+  alice:{nome:"Alice",form:"alice",cats:[
+    {id:"alice_doc",titulo:"Documentos obrigatórios",ico:"ti-file-check",obrig:true,
+     info:"Todos os anexos devem ser enviados em PDF.",warn:null,
+     docs:[
+      {t:"Contrato social ou último aditivo"},
+      {t:"Cartão CNPJ — últimos 90 dias"},
+      {t:"Inscrição SUSEP"},
+      {t:"Comprovante de endereço — últimos 3 meses"},
+      {t:"RG e CPF do representante legal"},
+      {t:"Comprovante bancário"},
+      {t:"Regime de tributação"},
+      {t:"RG, CPF e comprovante de endereço dos sócios"},
+      {t:"Cópia da Nota Fiscal (NF)"},
+      {t:"Cadastro de Contribuinte Mobiliário (CCM)",campo:true},
+      {t:"Número da Nomenclatura Brasileira de Serviços (NBS)",campo:true}
+    ]}
+  ]},
+  amil:{nome:"Amil",form:"amil",cats:[
+    {id:"amil_n",titulo:"Novo cadastro",ico:"ti-user-plus",obrig:true,
+     info:"CNAEs aceitos: 66.22.300 / 66.29.100 / 65.50.200. Multinotas somente se o corretor já estiver no Sis.",warn:null,
+     docs:[
+      {t:"Comprovante bancário (banco, agência e conta corrente com nome ou CNPJ da corretora)"},
+      {t:"Contrato social (com o sócio administrador inserido no processo)"},
+      {t:"Cópia de nota fiscal — ou foto da tela da Prefeitura com URL, nome, CNPJ e inscrição municipal"},
+      {t:"RG ou CNH do(s) sócio(s) administrador(es)"},
+      {t:"Comprovante de endereço do sócio (últimos 90 dias)"},
+      {t:"Cartão CNPJ emitido na Receita Federal"},
+      {t:"Carta Anticorrupção — assinada e rubricada em todas as páginas",dl:"amil_anticorrupcao"},
+      {t:"Termo de Vinculação — apenas preenchido (assinatura digital posterior)",dl:"amil_vinculacao"},
+      {t:"Formulário cadastral — preenchido nas duas páginas",dl:"amil_formulario"},
+      {t:"E-mail e telefone nominais dos sócios",campo:true},
+      {t:"Testemunha: nome completo, CPF e e-mail (não pode constar no quadro societário)",campo:true}
+    ]},
+    {id:"amil_t",titulo:"Transferência para Affinity",ico:"ti-arrows-exchange",obrig:true,info:null,
+     warn:"Quando a assessoria atual não retorna: o corretor preenche o Termo de Desvinculação, assina e nos envia junto com e-mail à plataforma atual. O e-mail substitui a assinatura após 30 dias.",
+     docs:[
+      {t:"Comprovante bancário"},{t:"Contrato social (com o sócio administrador)"},
+      {t:"Cópia de nota fiscal ou foto da tela da Prefeitura"},
+      {t:"RG ou CNH do(s) sócio(s)"},{t:"Comprovante de endereço do sócio (últimos 90 dias)"},
+      {t:"Cartão CNPJ"},
+      {t:"Carta Anticorrupção — assinada e rubricada",dl:"amil_anticorrupcao"},
+      {t:"Termo de Vinculação — apenas preenchido",dl:"amil_vinculacao"},
+      {t:"Formulário cadastral — preenchido nas duas páginas",dl:"amil_formulario"},
+      {t:"Termo de Desvinculação — assinado pela corretora e assessoria atual",dl:"amil_desvinculacao"},
+      {t:"Código atual na Amil"},
+      {t:"E-mail enviado à assessoria atual (substitui assinatura após 30 dias)"}
+    ]},
+    {id:"amil_alt",titulo:"Alteração de comissionamento",ico:"ti-edit",obrig:false,alternativo:true,
+     info:"Para realizar alteração de comissionamento na Amil.",warn:null,
+     docs:[
+      {t:"Termo de Vinculação — assinado pela corretora e pela plataforma Affinity (apenas para corretoras cadastradas antes de outubro/2018)",dl:"amil_vinculacao"},
+      {t:"Carta Anticorrupção — preenchida e assinada",dl:"amil_anticorrupcao"}
+    ]},
+    {id:"amil_dir",titulo:"Código direto na Amil → Vinculação à plataforma",ico:"ti-link",obrig:false,alternativo:true,
+     info:"Quando o corretor possui código Direto na Amil e deseja se vincular à plataforma Affinity.",warn:null,
+     docs:[
+      {t:"Termo de Vinculação — apenas preenchido (será enviado para assinatura digital posteriormente)",dl:"amil_vinculacao"},
+      {t:"Contrato Social da Corretora — com o sócio administrador inserido no processo"},
+      {t:"Carta Anticorrupção — preenchida e assinada",dl:"amil_anticorrupcao"},
+      {t:"Comprovante Bancário — documento que comprove o nome do Banco, Número da Agência e Conta Corrente com nome ou CNPJ da Corretora"},
+      {t:"Cartão CNPJ — emitido na Receita Federal sobre o CNPJ da Corretora"},
+      {t:"Formulário Cadastral — preenchido nas duas páginas",dl:"amil_formulario"}
+    ]}
+  ]},
+  assim_saude:{nome:"Assim Saúde",form:"assim",cats:[
+    {id:"ass_docs",titulo:"Documentos obrigatórios",ico:"ti-file-check",obrig:true,
+     info:null,warn:null,
+     docs:[
+      {t:"Contrato social e última alteração — devidamente registrado (Junta Comercial ou Registro Civil de PJ), com o mesmo endereço do CNPJ e alvará"},
+      {t:"CPF e identidade do(s) sócio(s) e/ou representantes legais constantes no contrato/estatuto social para assinatura do contrato"},
+      {t:"Cartão do CNPJ — com o mesmo endereço do contrato social/última alteração e do alvará"},
+      {t:"Cartão SUSEP"},
+      {t:"Cheque ou cartão do banco"},
+      {t:"Comprovante de residência dos sócios"},
+      {t:"Alvará — com o mesmo endereço do contrato social/última alteração e do CNPJ"}
+    ]},
+    {id:"ass_form",titulo:"Ficha cadastral e contrato (DocuSign)",ico:"ti-file-signature",obrig:true,
+     info:"Assinatura realizada via DocuSign — preencha os dados abaixo e anexe os arquivos.",warn:null,
+     docs:[
+      {t:"Ficha cadastral preenchida",dl:"assim_ficha"},
+      {t:"Termo de comissão preenchido (assinatura digital posterior)",dl:"assim_contrato"}
+    ]}
+  ]},
+  hapvida:{nome:"Hapvida",form:null,cats:[
+    {id:"hap_n",titulo:"Novo cadastro",ico:"ti-user-plus",obrig:true,
+     info:"Canal: Varejo — PF, Super Simples e PME. Filial SP/RJ. CNAE obrigatório: 66.22-3-00. Comprovante bancário não pode estar em nome de Pessoa Física.",warn:null,
+     docs:[
+      {t:"Cópia do contrato social e última alteração"},
+      {t:"Cópia do cartão CNPJ — CNAE 66.22-3-00 (Corretores e Agentes de Planos de Previdência Complementar e de Saúde)"},
+      {t:"Comprovante bancário atualizado — cópia do cheque, cartão frente e verso, extrato ou contrato com assinatura do gerente (não é permitido conta PF)"},
+      {t:"Cópias de RG e CPF ou CNH legível e comprovante residencial dos sócios"},
+      {t:"Carta de confirmação dos dados bancários — conforme modelo, carimbada e assinada",dl:"hapvida_confirmacao"},
+      {t:"Fator tributário — Simples Nacional: anexar PGDAS mais atual",dl:"pgdas_link",dlUrl:"https://www8.receita.fazenda.gov.br/simplesnacional/aplicacoes.aspx?id=21"},
+      {t:"Carta de agenciamento — assinada e carimbada",dl:"hapvida_agenciamento"},
+      {t:"Checklist de abertura — preenchido",dl:"hapvida_checklist"}
+    ]},
+    {id:"hap_t",titulo:"Transferência",ico:"ti-arrows-exchange",obrig:true,info:null,warn:null,
+     docs:[
+      {t:"Cópia do contrato social e última alteração"},
+      {t:"Cópia do cartão CNPJ — CNAE 66.22-3-00"},
+      {t:"Comprovante bancário atualizado — não é permitido conta PF"},
+      {t:"Cópias de RG e CPF ou CNH legível e comprovante residencial dos sócios"},
+      {t:"Carta de confirmação dos dados bancários — carimbada e assinada",dl:"hapvida_confirmacao"},
+      {t:"Fator tributário — Simples Nacional: anexar PGDAS mais atual",dl:"pgdas_link",dlUrl:"https://www8.receita.fazenda.gov.br/simplesnacional/aplicacoes.aspx?id=21"},
+      {t:"Código atual na Hapvida (NDI SP)"},
+      {t:"Carta de agenciamento — assinada e carimbada",dl:"hapvida_agenciamento"},
+      {t:"Checklist de abertura — preenchido",dl:"hapvida_checklist"}
+    ]}
+  ]},
+  leve_saude:{nome:"Leve Saúde",form:"leve",cats:[
+    {id:"lev_docs",titulo:"Documentos obrigatórios",ico:"ti-file-check",obrig:true,
+     info:null,warn:null,
+     docs:[
+      {t:"Contrato social com suas alterações e identificação dos sócios"},
+      {t:"Comprovante de inscrição no CNPJ (Cartão do CNPJ)"},
+      {t:"Documentos de identificação dos sócios ou responsáveis legais"},
+      {t:"Cópia da folha de cheque com dados bancários da empresa"}
+    ]},
+    {id:"lev_form",titulo:"Formulário de particionamento",ico:"ti-forms",obrig:true,
+     info:"Preencha os dados abaixo e anexe o formulário assinado (Opção 1 de particionamento).",warn:null,
+     docs:[
+      {t:"Formulário de Particionamento 2025 — assinado (Opção 1)",dl:"leve_pdf",dl2:"leve_doc"},
+      {t:"Formulário para Cadastramento — preenchido e assinado",dl:"leve_cadastramento"}
+    ]}
+  ]},
+  "medsênior":{nome:"MedSênior",form:"medsênior",cats:[
+    {id:"med_docs",titulo:"Documentos obrigatórios",ico:"ti-file-check",obrig:true,
+     info:"CNAE obrigatório: 6622-3/00 — Corretores e agentes de seguros, de planos de previdência complementar e de saúde.",warn:null,
+     docs:[
+      {t:"Cartão do CNPJ — CNAE compatível: 6622-3/00 (Corretores e agentes de seguros, de planos de previdência complementar e de saúde)"},
+      {t:"RG ou CNH do sócio — de todos os sócios que constam no contrato social. Atenção: documento deve estar dentro da validade"},
+      {t:"Conta bancária para depósito de comissões — ex.: cheque da empresa, cartão bancário (frente e verso) ou extrato"},
+      {t:"Cópia do contrato social — documento atualizado e assinado pelas partes responsáveis"},
+      {t:"Documento do Contador — informando o regime tributário da empresa. Se Simples Nacional, anexar PGDAS mais atual",dlUrl:"https://www8.receita.fazenda.gov.br/simplesnacional/aplicacoes.aspx?id=21"}
+    ]},
+  ]},
+  qualicorp:{nome:"Qualicorp",form:null,cats:[
+    {id:"qc_doc",titulo:"Documento para abertura de código de comercialização",ico:"ti-file-check",obrig:true,
+     info:null,warn:null,
+     docs:[
+      {t:"Contrato Social e alterações, se houver"},
+      {t:"CNPJ válido — Cartão CNPJ"},
+      {t:"Documentos dos sócios — RG / CPF"},
+      {t:"Comprovante de endereço dos sócios — contas fixas"},
+      {t:"Comprovante de endereço da corretora"},
+      {t:"Dados bancários: conta corrente, agência e banco — dados por escrito não serão aceitos"},
+      {t:"Telefone para contato",campo:true},
+      {t:"E-mail pessoal do(s) Signatário(s) — sócio responsável pela corretora",campo:true},
+      {t:"Ficha de cadastro Qualicorp — preenchida",dl:"qc_ficha"},
+      {t:"Ficha de cadastro da ferramenta digital de vendas — preenchida",dl:"qc_ferramenta"},
+      {t:"Questionário de Regime Tributário — preenchido",dl:"qc_regime"}
+    ]}
+  ]},
+  seguros_unimed:{nome:"Seguros Unimed",form:"unimed",cats:[
+    {id:"unimed_n",titulo:"Novo cadastro — informações para enviar junto ao código",ico:"ti-user-plus",docs:[
+      {t:"Código gerado",campo:true},
+      {t:"Razão social co-corretora",campo:true},
+      {t:"E-mail",campo:true},
+      {t:"CNPJ",campo:true},
+      {t:"Nome e CPF de todos os corretores a serem cadastrados",campo:true},
+      {t:"Nome do usuário principal",campo:true},
+      {t:"CPF do usuário principal",campo:true},
+      {t:"ID usuário",campo:true},
+      {t:"Telefone para contato",campo:true}
+    ]},
+    {id:"unimed_t",titulo:"Transferência — informar no corpo do e-mail e copiar o responsável pela co-corretora",ico:"ti-arrows-exchange",warn:"Colocar em cópia o responsável pela co-corretora.",docs:[
+      {t:"Código co-corretora",campo:true},
+      {t:"Razão social co-corretora",campo:true},
+      {t:"E-mail",campo:true},
+      {t:"CNPJ",campo:true},
+      {t:"Nome do usuário",campo:true},
+      {t:"ID usuário",campo:true},
+      {t:"CPF",campo:true},
+      {t:"Telefone para contato",campo:true},
+      {t:"Carta de Solicitação de Transferência — em papel timbrado, documento digitado e, se possível, carimbo da empresa"}
+    ]}
+  ]}
+};
+
+var checked={},arquivos={},textos={},filtroDoc="",opcaoSel=1,processoSel="";
+var estadoPorOp={};
+function getEstado(op){
+  if(!op)return{processoSel:"",opcaoSel:1,formValues:{},amSocioIdxs:[0]};
+  if(!estadoPorOp[op])estadoPorOp[op]={processoSel:"",opcaoSel:1,formValues:{},amSocioIdxs:[0]};
+  return estadoPorOp[op];
+}
+
+// ─── NAVEGAÇÃO ────────────────────────────────────────────────────────────────
+document.querySelectorAll(".nav-tab").forEach(function(tab){
+  tab.addEventListener("click",function(){
+    document.querySelectorAll(".nav-tab").forEach(function(t){t.classList.remove("active");});
+    document.querySelectorAll(".section").forEach(function(s){s.classList.remove("active");});
+    tab.classList.add("active");
+    document.getElementById("tab-"+tab.dataset.tab).classList.add("active");
+  });
+});
+document.getElementById("doc-chips").addEventListener("click",function(e){
+  var c=e.target.closest(".chip");if(!c)return;
+  filtroDoc=c.dataset.op||"";
+  var est=getEstado(filtroDoc);
+  processoSel=est.processoSel;
+  opcaoSel=est.opcaoSel;
+  document.querySelectorAll("#doc-chips .chip").forEach(function(x){x.classList.remove("active");});
+  c.classList.add("active");renderDocs();
+});
+document.getElementById("btn-send").addEventListener("click",abrirModal);
+document.getElementById("btn-cancel").addEventListener("click",fecharModal);
+document.getElementById("btn-confirm").addEventListener("click",confirmarEnvio);
+document.getElementById("modal").addEventListener("click",function(e){if(e.target===this)fecharModal();});
+
+// ─── EVENT DELEGATION ─────────────────────────────────────────────────────────
+document.addEventListener("click",function(e){
+  var chk=e.target.closest("[data-chk]");
+  if(chk){var id=chk.dataset.chk;checked[id]=!checked[id];chk.classList.toggle("on",checked[id]);atualizarProg();return;}
+  var rm=e.target.closest("[data-rm]");
+  if(rm){var p=rm.dataset.rm.split("|");if(arquivos[p[0]])arquivos[p[0]].splice(parseInt(p[1]),1);renderBadges(p[0]);return;}
+  var add=e.target.closest("[data-add]");
+  if(add){var p2=add.dataset.add.split("|");var n=prompt("Nome do documento:");if(!n)return;dados[p2[1]].cats.find(function(c){return c.id===p2[0];}).docs.push({t:n});renderDocs();return;}
+  var opsel=e.target.closest("[data-opsel]");
+  if(opsel){opcaoSel=parseInt(opsel.dataset.opsel);getEstado(filtroDoc).opcaoSel=opcaoSel;document.querySelectorAll("[data-opsel]").forEach(function(b){b.classList.toggle("sel",parseInt(b.dataset.opsel)===opcaoSel);});renderTabPart();return;}
+  var clr=e.target.closest("[data-clear]");
+  if(clr&&window["limpar_"+clr.dataset.clear])window["limpar_"+clr.dataset.clear]();
+  var cpy=e.target.closest("[data-copy]");
+  if(cpy&&window["copiar_"+cpy.dataset.copy])window["copiar_"+cpy.dataset.copy]();
+  var addSocio=e.target.closest("#btn-add-socio");
+  if(addSocio){
+    var cont=document.getElementById("am-socios");
+    if(cont){
+      cont.insertAdjacentHTML("beforeend",socioBlockHTML(amSocioNextIdx));
+      getEstado(filtroDoc).amSocioIdxs.push(amSocioNextIdx);
+      amSocioNextIdx++;
+      atualizarBotoesRemoverSocio();
+    }
+    return;
+  }
+  var rmSocio=e.target.closest("[data-rm-socio]");
+  if(rmSocio){
+    var blocks=document.querySelectorAll("#am-socios [data-socio-idx]");
+    if(blocks.length<=1)return;
+    var idx=rmSocio.dataset.rmSocio;
+    var block=document.querySelector("#am-socios [data-socio-idx=\""+idx+"\"]");
+    if(block)block.remove();
+    var est2=getEstado(filtroDoc);
+    est2.amSocioIdxs=est2.amSocioIdxs.filter(function(v){return String(v)!==String(idx);});
+    atualizarBotoesRemoverSocio();
+    return;
+  }
+});
+document.addEventListener("input",function(e){
+  var el=e.target;
+  if(el.id&&filtroDoc&&el.closest(".form-card")){getEstado(filtroDoc).formValues[el.id]=el.value;}
+});
+document.addEventListener("change",function(e){
+  var el=e.target;
+  if(el.tagName==="SELECT"&&el.id&&filtroDoc&&el.closest(".form-card")){getEstado(filtroDoc).formValues[el.id]=el.value;}
+});
+document.addEventListener("input",function(e){
+  var campo=e.target.closest("[data-campo]");
+  if(!campo)return;
+  var id=campo.dataset.campo;
+  textos[id]=campo.value;
+  var on=campo.value.trim().length>0;
+  if(on!==!!checked[id]){checked[id]=on;var chkEl=document.getElementById("chk_"+id);if(chkEl)chkEl.classList.toggle("on",on);atualizarProg();}
+});
+document.addEventListener("change",function(e){
+  var inp=e.target.closest("[data-upload]");
+  if(!inp||!inp.files.length)return;
+  var id=inp.dataset.upload;
+  if(!arquivos[id])arquivos[id]=[];
+  var rejeitados=[],avisos=[];
+  Array.prototype.forEach.call(inp.files,function(f){
+    if(f.size===0){rejeitados.push(f.name+" — arquivo vazio ou corrompido, tente anexar novamente");return;}
+    if(f.size>25*1024*1024){rejeitados.push(f.name+" — maior que 25MB, verifique o arquivo");return;}
+    var ext=f.name.split(".").pop().toLowerCase();
+    if(ext==="heic"||ext==="heif"){avisos.push(f.name+" — formato HEIC pode não abrir em todos os computadores. Se possível, envie como JPG.");}
+    arquivos[id].push(f);
+  });
+  if(rejeitados.length)alert("Não foi possível anexar:\n"+rejeitados.join("\n"));
+  if(avisos.length)alert("Atenção:\n"+avisos.join("\n"));
+  renderBadges(id);inp.value="";
+  // Auto-tick: marcar o checkbox ao anexar arquivo
+  if((arquivos[id]||[]).length && !checked[id]){checked[id]=true;var chkEl=document.getElementById("chk_"+id);if(chkEl){chkEl.classList.add("on");}atualizarProg();}
+});
+
+function renderBadges(id){
+  var c=document.getElementById("bdg_"+id);if(!c)return;
+  c.innerHTML=(arquivos[id]||[]).map(function(f,i){
+    var ic=iconArquivo(f.name);
+    return "<span class=\"f-badge\"><i class=\"ti "+ic.ic+"\" style=\"font-size:11px;color:"+ic.cor+"\"></i><span>"+f.name+"</span><span class=\"f-rm\" data-rm=\""+id+"|"+i+"\">✕</span></span> ";
+  }).join("");
+  var dicon=document.getElementById("dicon_"+id);
+  if(dicon){
+    var arq=arquivos[id];
+    if(arq&&arq.length>0){var ic2=iconArquivo(arq[0].name);dicon.className="ti "+ic2.ic+" doc-icon";dicon.style.color=ic2.cor;}
+    else{dicon.className="ti ti-paperclip doc-icon";dicon.style.color="#999";}
+  }
+}
+
+function iconArquivo(nome){
+  var ext=(nome.split(".").pop()||"").toLowerCase();
+  var map={
+    pdf:{ic:"ti-file-type-pdf",cor:"#c62828"},
+    doc:{ic:"ti-file-type-doc",cor:"#2b579a"},docx:{ic:"ti-file-type-doc",cor:"#2b579a"},
+    xls:{ic:"ti-file-type-xls",cor:"#1a7c3e"},xlsx:{ic:"ti-file-type-xls",cor:"#1a7c3e"},
+    zip:{ic:"ti-file-zip",cor:"#8a6d3b"},
+    jpg:{ic:"ti-photo",cor:"#8e44ad"},jpeg:{ic:"ti-photo",cor:"#8e44ad"},png:{ic:"ti-photo",cor:"#8e44ad"},
+    heic:{ic:"ti-photo",cor:"#8e44ad"},heif:{ic:"ti-photo",cor:"#8e44ad"},gif:{ic:"ti-photo",cor:"#8e44ad"},webp:{ic:"ti-photo",cor:"#8e44ad"}
+  };
+  return map[ext]||{ic:"ti-file",cor:"#888"};
+}
+function mkDocIcon(doc,id){
+  if(doc.campo)return "<i class=\"ti ti-pencil doc-icon\" id=\"dicon_"+id+"\" style=\"color:var(--gold-dark)\"></i>";
+  var arq=arquivos[id];
+  if(arq&&arq.length>0){var ic=iconArquivo(arq[0].name);return "<i class=\"ti "+ic.ic+" doc-icon\" id=\"dicon_"+id+"\" style=\"color:"+ic.cor+"\"></i>";}
+  return "<i class=\"ti ti-paperclip doc-icon\" id=\"dicon_"+id+"\" style=\"color:#999\"></i>";
+}
+function mkDocActions(doc,id){
+  if(doc.campo){
+    var val=textos[id]?textos[id].replace(/"/g,"&quot;"):"";
+    return "<div class=\"doc-actions\"><input type=\"text\" class=\"doc-campo-input\" data-campo=\""+id+"\" placeholder=\"Digite aqui...\" value=\""+val+"\"></div>";
+  }
+  return "<div class=\"doc-actions\"><label class=\"up-lbl\"><i class=\"ti ti-upload\"></i>Anexar<input type=\"file\" multiple data-upload=\""+id+"\"></label><span id=\"bdg_"+id+"\"></span></div>";
+}
+function mkDl(key,key2){
+  var f=FILES[key];if(!f)return "";
+  var ic={"dl-pdf":"ti-file-type-pdf","dl-word":"ti-file-type-doc","dl-excel":"ti-file-type-xls"};
+  var h="<a class=\"dl-btn "+f.cls+"\" href=\""+f.url+"\" download target=\"_blank\"><i class=\"ti "+ic[f.cls]+"\"></i>"+f.label+"</a>";
+  if(key2&&FILES[key2]){var f2=FILES[key2];h+=" <a class=\"dl-btn "+f2.cls+"\" href=\""+f2.url+"\" download target=\"_blank\"><i class=\"ti "+ic[f2.cls]+"\"></i>"+f2.label+"</a>";}
+  return h;
+}
+
+function setProcesso(p){processoSel=p;getEstado(filtroDoc).processoSel=p;renderDocs();}
+
+// ─── RENDER DOCS ──────────────────────────────────────────────────────────────
+function renderDocs(){
+  var cont=document.getElementById("doc-content");
+  var footer=document.getElementById("doc-footer");
+  if(!filtroDoc){
+    cont.innerHTML="<div class=\"empty-state\"><i class=\"ti ti-hand-click\"></i><p>Selecione uma operadora para ver os documentos necessários</p></div>";
+    footer.style.display="none";return;
+  }
+  var d=dados[filtroDoc];
+  footer.style.display="block";
+  if(d.soon){
+    cont.innerHTML="<div class=\"empty-state\"><i class=\"ti ti-clock\" style=\"color:#C9A84C\"></i><p style=\"color:#C9A84C;font-weight:700\">Em breve</p><p style=\"font-size:13px;color:#888\">As informações da operadora <strong>"+d.nome+"</strong> estarão disponíveis em breve.</p></div>";
+    footer.style.display="none";
+    return;
+  }
+  var h="";
+  if(d.form==="unimed"){
+    h+=renderUnimed(); // já inclui seu próprio cabeçalho
+  } else {
+    h+="<div class=\"op-label\"><span class=\"op-badge-pill\">"+d.nome+"</span><span class=\"op-title\">Documentos necessários</span></div>";
+  }
+
+  // Seletor de processo (Novo Cadastro / Transferência / Ambos) — só quando há mais de 1 categoria
+  var temNovoCad = d.cats.some(function(c){return c.id.indexOf("_n")!==-1;});
+  var temTransf   = d.cats.some(function(c){return c.id.indexOf("_t")!==-1;});
+  if(temNovoCad && temTransf){
+    h+="<div class=\"processo-sel\" style=\"display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap\">";
+    h+="<button class=\"proc-btn"+(processoSel==="novo"?" proc-ativo":"")+"\" onclick=\"setProcesso('novo')\"><i class=\"ti ti-user-plus\"></i> Novo Cadastro</button>";
+    h+="<button class=\"proc-btn"+(processoSel==="transf"?" proc-ativo":"")+"\" onclick=\"setProcesso('transf')\"><i class=\"ti ti-arrows-exchange\"></i> Transferência</button>";
+    h+="</div>";
+  }
+
+  // Separar cats: processo (tem _n ou _t) e extras (não tem nenhum)
+  var catsProc=d.cats.filter(function(c){return c.id.indexOf("_n")!==-1||c.id.indexOf("_t")!==-1;});
+  var catsExtra=d.cats.filter(function(c){return c.id.indexOf("_n")===-1&&c.id.indexOf("_t")===-1;});
+
+  // Se há processo novo e transf mas nenhum foi selecionado, mostrar aviso
+  if(processoSel==="" && catsProc.length>0){
+    h+="<div class=\"info-box\" style=\"margin-bottom:14px\"><i class=\"ti ti-hand-click\"></i><span>Selecione o tipo de processo acima para ver os documentos necessários.</span></div>";
+  }
+  h+="<div class=\"doc-grid\">";
+  catsProc.forEach(function(cat){
+    if(processoSel===""){ return; } // Não mostrar docs sem processo selecionado
+    // Filtrar categoria conforme processo selecionado
+    var isNovo  = cat.id.indexOf("_n")!==-1;
+    var isTransf= cat.id.indexOf("_t")!==-1;
+    if(processoSel==="novo"   && isTransf && !isNovo) return;
+    if(processoSel==="transf" && isNovo   && !isTransf) return;
+    h+="<div class=\"cat-card\">";
+    h+="<div class=\"cat-head\"><i class=\"ti "+cat.ico+"\"></i>"+cat.titulo+(cat.obrig?"<span class=\"tag-obrig\">Obrigatório</span>":"")+"</div>";
+    if(cat.info)h+="<div class=\"info-box\"><i class=\"ti ti-info-circle\"></i><span>"+cat.info+"</span></div>";
+    if(cat.warn)h+="<div class=\"warn-box\"><i class=\"ti ti-alert-triangle\"></i><span>"+cat.warn+"</span></div>";
+    h+="<ul class=\"doc-list\">";
+    cat.docs.forEach(function(doc,i){
+      var id=cat.id+"_"+i;
+      var extLink=doc.dlUrl?"<a class=\"dl-btn dl-pdf\" href=\""+doc.dlUrl+"\" target=\"_blank\"><i class=\"ti ti-external-link\"></i>Acessar PGDAS</a>":"";
+      var dlH=doc.dl?"<div style=\"margin-top:5px;display:flex;gap:6px;flex-wrap:wrap;align-items:center\">"+mkDl(doc.dl,doc.dl2)+extLink+"</div><div class=\"dl-note\"><i class=\"ti ti-info-circle\"></i>Baixe, preencha/assine e anexe abaixo</div>":(extLink?"<div style=\"margin-top:5px\">"+extLink+"</div>":"");
+      h+="<li class=\"doc-item\" id=\"doc_"+id+"\">";
+      h+="<div class=\"doc-row\">"+mkDocIcon(doc,id)+"<span class=\"doc-name\">"+doc.t+"</span>";
+      h+="<div class=\"doc-chk "+(checked[id]?"on":"")+"\" data-chk=\""+id+"\" id=\"chk_"+id+"\"></div></div>";
+      h+=dlH;
+      h+=mkDocActions(doc,id);
+      h+="</li>";
+    });
+    h+="</ul>";
+    h+="<button class=\"add-doc-btn\" data-add=\""+cat.id+"|"+filtroDoc+"\"><i class=\"ti ti-plus\"></i>Adicionar documento</button>";
+    h+="</div>";
+  });
+  h+="</div>";
+
+  // Seção extra (Alteração, Código Direto, etc.) — sempre visível, fora do filtro de processo
+  if(catsExtra.length>0){
+    h+="<div class=\"extra-section\">";
+    h+="<div class=\"extra-section-title\">Outros processos</div>";
+    h+="<div class=\"doc-grid\">";
+    catsExtra.forEach(function(cat){
+      var id,dlH;
+      h+="<div class=\"cat-card\">";
+      h+="<div class=\"cat-head\"><i class=\"ti "+cat.ico+"\"></i>"+cat.titulo+(cat.obrig?"<span class=\"tag-obrig\">Obrigatório</span>":"")+"</div>";
+      if(cat.info)h+="<div class=\"info-box\"><i class=\"ti ti-info-circle\"></i><span>"+cat.info+"</span></div>";
+      if(cat.warn)h+="<div class=\"warn-box\"><i class=\"ti ti-alert-triangle\"></i><span>"+cat.warn+"</span></div>";
+      h+="<ul class=\"doc-list\">";
+      cat.docs.forEach(function(doc,i){
+        id=cat.id+"_"+i;
+        var extLinkE=doc.dlUrl?"<a class=\"dl-btn dl-pdf\" href=\""+doc.dlUrl+"\" target=\"_blank\"><i class=\"ti ti-external-link\"></i>Acessar PGDAS</a>":"";
+        dlH=doc.dl?"<div style=\"margin-top:5px;display:flex;gap:6px;flex-wrap:wrap;align-items:center\">"+mkDl(doc.dl,doc.dl2)+extLinkE+"</div><div class=\"dl-note\"><i class=\"ti ti-info-circle\"></i>Baixe, preencha/assine e anexe abaixo</div>":(extLinkE?"<div style=\"margin-top:5px\">"+extLinkE+"</div>":"");
+        h+="<li class=\"doc-item\" id=\"doc_"+id+"\">";
+        h+="<div class=\"doc-row\">"+mkDocIcon(doc,id)+"<span class=\"doc-name\">"+doc.t+"</span>";
+        h+="<div class=\"doc-chk "+(checked[id]?"on":"")+" \" data-chk=\""+id+"\" id=\"chk_"+id+"\"></div></div>";
+        h+=dlH;
+        h+=mkDocActions(doc,id);
+        h+="</li>";
+      });
+      h+="</ul>";
+      h+="<button class=\"add-doc-btn\" data-add=\""+cat.id+"|"+filtroDoc+"\"><i class=\"ti ti-plus\"></i>Adicionar documento</button>";
+      h+="</div>";
+    });
+    h+="</div></div>";
+  }
+
+  h+=renderForm(d.form);
+  cont.innerHTML=h;
+  if(d.form==="leve")renderTabPart();
+  restaurarFormValues();
+  if(d.form==="amil")atualizarBotoesRemoverSocio();
+  atualizarProg();
+}
+
+function renderForm(f){
+  if(f==="alice")return renderFormAlice();
+  if(f==="amil")return renderFormAmil();
+  if(f==="assim")return renderFormAssim();
+  if(f==="leve")return renderFormLeve();
+  if(f==="medsênior")return renderFormMed();
+  return "";
+}
+
+function atualizarProg(){
+  if(!filtroDoc)return;
+  var d=dados[filtroDoc];
+  var total=0,m=0;
+  d.cats.forEach(function(cat){cat.docs.forEach(function(_,i){total++;if(checked[cat.id+"_"+i])m++;});});
+  var pct=total?Math.round((m/total)*100):0;
+  document.getElementById("prog-txt").textContent=m+" de "+total+" confirmados";
+  document.getElementById("prog-bar").style.width=pct+"%";
+}
+
+// ─── VALIDAÇÃO CORRETOR ───────────────────────────────────────────────────────
+function getCorretor(){
+  return {
+    sis:   document.getElementById("cor_sis").value.trim(),
+    nome:  document.getElementById("cor_nome").value.trim(),
+    tel:   document.getElementById("cor_tel").value.trim(),
+    email: document.getElementById("cor_email").value.trim(),
+    supervisor: document.getElementById("cor_supervisor").value.trim()
+  };
+}
+function validarCorretor(){
+  var c=getCorretor();
+  var ok=true;
+  ["cor_sis","cor_nome","cor_tel","cor_email","cor_supervisor"].forEach(function(id){
+    var el=document.getElementById(id);
+    if(!el.value.trim()){el.classList.add("error");ok=false;}
+    else el.classList.remove("error");
+  });
+  if(!ok) alert("Preencha todos os dados do corretor antes de enviar.");
+  return ok;
+}
+
+// ─── VALIDAÇÃO DE DOCUMENTOS OBRIGATÓRIOS ────────────────────────────────────
+function catEngajada(cat){
+  return cat.docs.some(function(doc,i){
+    var id=cat.id+"_"+i;
+    var preenchido = doc.campo ? (textos[id]&&textos[id].trim().length>0) : (arquivos[id]&&arquivos[id].length>0);
+    return preenchido || !!checked[id];
+  });
+}
+function limparDestaquesDocs(){
+  document.querySelectorAll(".doc-item.missing").forEach(function(el){el.classList.remove("missing");});
+}
+function validarDocumentos(){
+  limparDestaquesDocs();
+  if(!filtroDoc)return{ok:false,missing:[],nadaSelecionado:true};
+  var d=dados[filtroDoc];
+  var missing=[];
+  var catsProc=d.cats.filter(function(c){return c.id.indexOf("_n")!==-1||c.id.indexOf("_t")!==-1;});
+  var catsExtra=d.cats.filter(function(c){return c.id.indexOf("_n")===-1&&c.id.indexOf("_t")===-1;});
+  var validarCat=function(cat){
+    cat.docs.forEach(function(doc,i){
+      var id=cat.id+"_"+i;
+      var preenchido = doc.campo ? (textos[id]&&textos[id].trim().length>0) : (arquivos[id]&&arquivos[id].length>0);
+      if(!preenchido){
+        missing.push({cat:cat.titulo,doc:doc.t,id:id});
+        var li=document.getElementById("doc_"+id);
+        if(li)li.classList.add("missing");
+      }
+    });
+  };
+  var procEngajado = processoSel!=="" && catsProc.some(catEngajada);
+  if(procEngajado){
+    catsProc.forEach(function(cat){
+      var isNovo  = cat.id.indexOf("_n")!==-1;
+      var isTransf= cat.id.indexOf("_t")!==-1;
+      if(processoSel==="novo"   && isTransf && !isNovo) return;
+      if(processoSel==="transf" && isNovo   && !isTransf) return;
+      validarCat(cat);
+    });
+  }
+  var extraEngajadas = catsExtra.filter(catEngajada);
+  extraEngajadas.forEach(validarCat);
+  if(!procEngajado && extraEngajadas.length===0){
+    return{ok:false,missing:[],nadaSelecionado:true};
+  }
+  return{ok:missing.length===0,missing:missing};
+}
+
+// ─── VALIDAÇÃO DOS FORMULÁRIOS ESPECÍFICOS DE CADA OPERADORA ─────────────────
+var CAMPOS_FORM={
+  alice:[["al_fin_nome","Nome do responsável financeiro"],["al_fin_cpf","CPF do responsável financeiro"],["al_fin_nasc","Nascimento do responsável financeiro"],["al_fin_email","E-mail do responsável financeiro"],["al_fin_tel","Telefone do responsável financeiro"],
+    ["al_test_nome","Nome da testemunha"],["al_test_cpf","CPF da testemunha"],["al_test_nasc","Nascimento da testemunha"],["al_test_email","E-mail da testemunha"],["al_test_tel","Telefone da testemunha"],
+    ["al_emp_nome","Nome do responsável pela empresa"],["al_emp_cpf","CPF do responsável pela empresa"],["al_emp_nasc","Nascimento do responsável pela empresa"],["al_emp_email","E-mail do responsável pela empresa"],["al_emp_tel","Telefone do responsável pela empresa"]],
+  assim:[["as_razao","Razão social"],["as_cnpj","CNPJ"],["as_tel","Telefone"],["as_rl_nome","Nome do representante legal"],["as_rl_email","E-mail do representante legal"],["as_test_nome","Nome da testemunha"],["as_test_email","E-mail da testemunha"],["as_site_nome","Nome — site Assim"],["as_site_email","E-mail — site Assim"],["as_plat_nome","Nome — plataforma online"],["as_plat_email","E-mail — plataforma online"]],
+  leve:[["cor_razao","Razão social da corretora"],["cor_cnpj","CNPJ da corretora"],["cor_banco","Banco"],["cor_ag","Agência"],["cor_cc","Conta corrente"],["form_cidade","Cidade"],["form_data","Data"]],
+  "medsênior":[["med_conc_razao","Razão social da concessionária"],["med_conc_codigo","Código da concessionária"],["med_conc_cnpj","CNPJ da concessionária"],["med_conc_banco","Banco"],["med_conc_ag","Agência"],["med_conc_cc","Conta corrente"],["med_conc_tel","Telefone"],["med_conc_email","E-mail"],["rl_nome","Nome do representante legal"],["rl_email","E-mail do representante legal"],["rl_cpf","CPF do representante legal"],["rl_nasc","Nascimento do representante legal"],["test_nome","Nome da testemunha"],["test_email","E-mail da testemunha"],["test_cpf","CPF da testemunha"],["test_nasc","Nascimento da testemunha"],["nf_nome","Nome — resp. comissão/NF"],["nf_email","E-mail — resp. comissão/NF"],["nf_cpf","CPF — resp. comissão/NF"],["nf_nasc","Nascimento — resp. comissão/NF"],["tel_fixo","Telefone fixo"]]
+};
+var CAMPOS_FORM_AMIL_FIXOS=[["am_razao","Razão social"],["am_cnpj","CNPJ"],["am_ccm","CCM / Inscrição municipal"],["am_banco","Banco"],["am_ag","Agência"],["am_cc","Conta corrente"],["am_seg","Segmento"],["am_aliq","Alíquota"],["am_iss","ISS retido por"],["am_test_nome","Nome da testemunha"],["am_test_cpf","CPF da testemunha"],["am_test_email","E-mail da testemunha"],["am_local","Local"],["am_data","Data"]];
+function validarFormularioOperadora(){
+  if(!filtroDoc)return{ok:false,missing:[]};
+  var d=dados[filtroDoc];
+  var missing=[];
+  var checarCampo=function(id,label){
+    var el=document.getElementById(id);
+    if(!el)return;
+    if(!el.value.trim()){el.classList.add("error");missing.push(label);}
+    else el.classList.remove("error");
+  };
+  if(d.form==="amil"){
+    CAMPOS_FORM_AMIL_FIXOS.forEach(function(c){checarCampo(c[0],c[1]);});
+    var blocks=document.querySelectorAll("#am-socios [data-socio-idx]");
+    blocks.forEach(function(b,n){
+      var idx=b.dataset.socioIdx,num=n+1;
+      checarCampo("am_resp_nome_"+idx,"Nome do sócio "+num);
+      checarCampo("am_resp_cpf_"+idx,"CPF do sócio "+num);
+      checarCampo("am_resp_rg_"+idx,"RG do sócio "+num);
+      checarCampo("am_resp_email_"+idx,"E-mail do sócio "+num);
+      checarCampo("am_resp_tel_"+idx,"Telefone do sócio "+num);
+    });
+    return{ok:missing.length===0,missing:missing};
+  }
+  var campos=CAMPOS_FORM[d.form];
+  if(!campos)return{ok:true,missing:[]}; // operadora sem formulário próprio (ex: Hapvida, Unimed)
+  campos.forEach(function(c){checarCampo(c[0],c[1]);});
+  return{ok:missing.length===0,missing:missing};
+}
+
+// ─── MODAL / ENVIO ────────────────────────────────────────────────────────────
+function abrirModal(){
+  if(!filtroDoc){alert("Selecione uma operadora.");return;}
+  if(!validarCorretor())return;
+  var d0=dados[filtroDoc];
+  var catsProc0=d0.cats.filter(function(c){return c.id.indexOf("_n")!==-1||c.id.indexOf("_t")!==-1;});
+  var catsExtra0=d0.cats.filter(function(c){return c.id.indexOf("_n")===-1&&c.id.indexOf("_t")===-1;});
+  var procEngajado0 = catsProc0.some(catEngajada);
+  var extraEngajadas0 = catsExtra0.filter(catEngajada);
+  var catsEngajadas0 = d0.cats.filter(catEngajada);
+  var apenasAlternativo0 = catsEngajadas0.length>0 && catsEngajadas0.every(function(c){return c.alternativo;});
+  var temFormOperadora0 = d0.form==="amil" || !!CAMPOS_FORM[d0.form];
+  if(procEngajado0 && catsProc0.length>0 && processoSel===""){
+    alert("Selecione o tipo de processo (Novo Cadastro ou Transferência) antes de enviar.");
+    return;
+  }
+  var vd=validarDocumentos();
+  var vf=(temFormOperadora0 && !apenasAlternativo0)?validarFormularioOperadora():{ok:true,missing:[]};
+  if(vd.nadaSelecionado){
+    alert("Selecione o Novo Cadastro/Transferência ou preencha um dos Outros Processos antes de enviar.");
+    return;
+  }
+  if(!vd.ok||!vf.ok){
+    var msg="Não é possível enviar o processo:\n";
+    if(vd.missing.length){
+      msg+="\n📎 Documentos sem anexo:\n"+vd.missing.map(function(m){return "• "+m.doc+" ("+m.cat+")";}).join("\n")+"\n";
+    }
+    if(vf.missing.length){
+      msg+="\n📝 Campos do formulário não preenchidos:\n"+vf.missing.map(function(m){return "• "+m;}).join("\n");
+    }
+    alert(msg);
+    var primeiro=document.querySelector(".doc-item.missing")||document.querySelector(".ff input.error, .ci.error");
+    if(primeiro)primeiro.scrollIntoView({behavior:"smooth",block:"center"});
+    return;
+  }
+  var cor=getCorretor();
+  var d=dados[filtroDoc];
+  var linhas=["<b>Corretor:</b> "+cor.nome+" | Sis: "+cor.sis,"<b>Telefone:</b> "+cor.tel+" | <b>E-mail:</b> "+cor.email,"<b>Supervisor:</b> "+cor.supervisor,"<b>Operadora:</b> "+d.nome,""];
+  d.cats.forEach(function(cat){
+    var m=cat.docs.filter(function(_,i){return checked[cat.id+"_"+i];}).length;
+    var arq=cat.docs.reduce(function(a,_,i){return a+((arquivos[cat.id+"_"+i]||[]).length);},0);
+    linhas.push("<b>"+cat.titulo+":</b> "+m+"/"+cat.docs.length+" confirmados"+(arq>0?" · <span style=\"color:var(--gold)\">"+arq+" arquivo(s)</span>":""));
+  });
+  document.getElementById("modal-preview").innerHTML=linhas.join("<br>");
+  document.getElementById("modal").classList.add("open");
+}
+function fecharModal(){document.getElementById("modal").classList.remove("open");}
+
+function mkFRow(label,val){
+  return "<tr>"
+    +"<td style=\"padding:5px 10px 5px 0;color:#888;font-size:11px;font-weight:700;width:42%;vertical-align:top;border-bottom:1px solid #f5f0f9\">"+label+"</td>"
+    +"<td style=\"padding:5px 0;color:#2D1228;font-size:12px;border-bottom:1px solid #f5f0f9\">"+val+"</td>"
+    +"</tr>";
+}
+
+function confirmarEnvio(){
+  var cor=getCorretor();
+  var d=dados[filtroDoc];
+  var obs=(document.getElementById("notas-corretor")||{value:""}).value.trim()||(document.getElementById("e-obs")||{value:""}).value.trim();
+
+  // Montar checklist
+  var checklist="";
+  var checklistHtml="";
+  if(d.form==="unimed"){
+    checklist="SEGUROS UNIMED — Passo a passo:\n1. www.segurosunimed.com.br → Seja um corretor\n2. Preencha e anexe documentos\n3. Vinculado a Assessoria: NÃO\n4. Até 10 dias úteis\n5. Código por e-mail\n6. assessoria@affinitycorretora.com.br\n\n";
+    checklistHtml="<p><strong>SEGUROS UNIMED — Passo a passo</strong></p><ol><li>www.segurosunimed.com.br → Seja um corretor</li><li>Preencha e anexe documentos</li><li>Vinculado a Assessoria: <strong>NÃO</strong></li><li>Até 10 dias úteis</li><li>Código por e-mail</li><li>assessoria@affinitycorretora.com.br</li></ol>";
+  }
+  d.cats.forEach(function(cat){
+      // Filtrar categorias conforme processo selecionado
+      var isNovo  = cat.id.indexOf("_n")!==-1;
+      var isTransf= cat.id.indexOf("_t")!==-1;
+      if(processoSel==="novo"   && isTransf && !isNovo) return;
+      if(processoSel==="transf" && isNovo   && !isTransf) return;
+      var docsAnexados = [];
+      var docsAnexadosHtml = [];
+      cat.docs.forEach(function(doc,i){
+        var id=cat.id+"_"+i;
+        if(doc.campo){
+          if(textos[id]&&textos[id].trim()){
+            docsAnexados.push("📝 "+doc.t+": "+textos[id].trim());
+            docsAnexadosHtml.push("<li style='color:#1a7c3e'>📝 <strong>"+doc.t+":</strong> "+textos[id].trim()+"</li>");
+          }
+        } else if(arquivos[id]&&arquivos[id].length>0){
+          docsAnexados.push("📎 "+doc.t+" ("+arquivos[id].map(function(f){return f.name;}).join(", ")+")");
+          docsAnexadosHtml.push("<li style='color:#1a7c3e'>📎 <strong>"+doc.t+"</strong> — "+arquivos[id].map(function(f){return f.name;}).join(", ")+"</li>");
+        } else if(checked[id]){
+          docsAnexados.push("✓ "+doc.t);
+          docsAnexadosHtml.push("<li style='color:#555'>✓ "+doc.t+"</li>");
+        }
+      });
+      if(docsAnexados.length>0){
+        checklist+=cat.titulo.toUpperCase()+":\n";
+        docsAnexados.forEach(function(l){checklist+=l+"\n";});
+        checklist+="\n";
+        checklistHtml+="<p style='margin:12px 0 4px;font-weight:700;color:#4A2050;border-bottom:1px solid #ede0f2;padding-bottom:4px'>"+cat.titulo+"</p><ul style='margin:0;padding-left:18px;line-height:1.7'>"+docsAnexadosHtml.join("")+"</ul>";
+      }
+  });
+  if(obs){ checklist+="\nObservações: "+obs; checklistHtml+="<p style='margin:14px 0 4px;font-weight:700;color:#4A2050'>Observações</p><p style='background:#fdf3e7;border-radius:6px;padding:8px 12px;color:#555'>"+obs+"</p>"; }
+
+  var data_envio=new Date().toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"});
+
+  // ─── Coletar dados dos formulários ───────────────────────────────────────
+  var v=function(id){var el=document.getElementById(id);return(el&&el.value.trim())?el.value.trim():"—";};
+  var formHtml="";
+  var formTxt="";
+
+  if(d.form==="alice"){
+    formTxt="DADOS ALICE\nResponsável Financeiro: "+v("al_fin_nome")+" | CPF: "+v("al_fin_cpf")+" | Nasc: "+v("al_fin_nasc")+" | E-mail: "+v("al_fin_email")+" | Tel: "+v("al_fin_tel");
+    formTxt+="\nTestemunha: "+v("al_test_nome")+" | CPF: "+v("al_test_cpf")+" | Nasc: "+v("al_test_nasc")+" | E-mail: "+v("al_test_email")+" | Tel: "+v("al_test_tel");
+    formTxt+="\nResponsável pela Empresa: "+v("al_emp_nome")+" | CPF: "+v("al_emp_cpf")+" | Nasc: "+v("al_emp_nasc")+" | E-mail: "+v("al_emp_email")+" | Tel: "+v("al_emp_tel");
+    formHtml="<div style=\"margin-top:14px;border-top:1px solid #ede0f2;padding-top:12px\">"
+      +"<p style=\"margin:0 0 10px;font-weight:700;color:#4A2050;font-size:13px\">📋 Dados obrigatórios — Alice</p>"
+      +"<table style=\"width:100%;border-collapse:collapse;font-size:12px\">"
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Responsável Financeiro</td></tr>"
+      +mkFRow("Nome",v("al_fin_nome"))
+      +mkFRow("CPF",v("al_fin_cpf"))
+      +mkFRow("Nascimento",v("al_fin_nasc"))
+      +mkFRow("E-mail",v("al_fin_email"))
+      +mkFRow("Telefone",v("al_fin_tel"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Testemunha</td></tr>"
+      +mkFRow("Nome",v("al_test_nome"))
+      +mkFRow("CPF",v("al_test_cpf"))
+      +mkFRow("Nascimento",v("al_test_nasc"))
+      +mkFRow("E-mail",v("al_test_email"))
+      +mkFRow("Telefone",v("al_test_tel"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Responsável pela Empresa</td></tr>"
+      +mkFRow("Nome",v("al_emp_nome"))
+      +mkFRow("CPF",v("al_emp_cpf"))
+      +mkFRow("Nascimento",v("al_emp_nasc"))
+      +mkFRow("E-mail",v("al_emp_email"))
+      +mkFRow("Telefone",v("al_emp_tel"))
+      +"</table></div>";
+  } else if(d.form==="amil"){
+    var sociosTxt="",sociosHtml="";
+    document.querySelectorAll("#am-socios [data-socio-idx]").forEach(function(b,n){
+      var idx=b.dataset.socioIdx,num=n+1;
+      sociosTxt+="\nSócio "+num+": "+v("am_resp_nome_"+idx)+" | CPF: "+v("am_resp_cpf_"+idx)+" | RG: "+v("am_resp_rg_"+idx)+" | E-mail: "+v("am_resp_email_"+idx)+" | Tel: "+v("am_resp_tel_"+idx);
+      sociosHtml+="<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Sócio "+num+"</td></tr>"
+        +mkFRow("Nome completo",v("am_resp_nome_"+idx))
+        +mkFRow("CPF",v("am_resp_cpf_"+idx))
+        +mkFRow("RG",v("am_resp_rg_"+idx))
+        +mkFRow("E-mail nominal",v("am_resp_email_"+idx))
+        +mkFRow("Telefone",v("am_resp_tel_"+idx));
+    });
+    formTxt="DADOS AMIL\nCorretora: "+v("am_razao")+"\nCNPJ: "+v("am_cnpj")+" | CCM: "+v("am_ccm")+" | Segmento: "+v("am_seg")+" | Alíquota: "+v("am_aliq")+" | ISS retido por: "+v("am_iss")+"\nBanco: "+v("am_banco")+" | Agência: "+v("am_ag")+" | Conta: "+v("am_cc")+sociosTxt+"\nTestemunha: "+v("am_test_nome")+" | CPF: "+v("am_test_cpf")+" | E-mail: "+v("am_test_email")+"\nLocal: "+v("am_local")+" | Data: "+v("am_data");
+    formHtml="<div style=\"margin-top:14px;border-top:1px solid #ede0f2;padding-top:12px\">"
+      +"<p style=\"margin:0 0 10px;font-weight:700;color:#4A2050;font-size:13px\">📋 Dados para Amil</p>"
+      +"<table style=\"width:100%;border-collapse:collapse;font-size:12px\">"
+      +mkFRow("Razão social",v("am_razao"))
+      +mkFRow("CNPJ",v("am_cnpj"))
+      +mkFRow("CCM / Inscrição municipal",v("am_ccm"))
+      +mkFRow("Banco",v("am_banco"))
+      +mkFRow("Agência",v("am_ag"))
+      +mkFRow("Conta corrente",v("am_cc"))
+      +mkFRow("Segmento",v("am_seg"))
+      +mkFRow("Alíquota",v("am_aliq"))
+      +mkFRow("ISS retido por",v("am_iss"))
+      +sociosHtml
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Testemunha</td></tr>"
+      +mkFRow("Nome completo",v("am_test_nome"))
+      +mkFRow("CPF",v("am_test_cpf"))
+      +mkFRow("E-mail",v("am_test_email"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Carta Anticorrupção</td></tr>"
+      +mkFRow("Local",v("am_local"))
+      +mkFRow("Data",v("am_data"))
+      +"</table></div>";
+  } else if(d.form==="assim"){
+    formTxt="FICHA ASSIM SAÚDE\nRazão: "+v("as_razao")+" | CNPJ: "+v("as_cnpj")+" | Tel: "+v("as_tel")+"\nRepresentante: "+v("as_rl_nome")+" | "+v("as_rl_email")+"\nTestemunha: "+v("as_test_nome")+" | "+v("as_test_email")+"\nSite Assim: "+v("as_site_nome")+" | "+v("as_site_email")+"\nPlataforma: "+v("as_plat_nome")+" | "+v("as_plat_email");
+    formHtml="<div style=\"margin-top:14px;border-top:1px solid #ede0f2;padding-top:12px\">"
+      +"<p style=\"margin:0 0 10px;font-weight:700;color:#4A2050;font-size:13px\">📋 Ficha cadastral — Assim Saúde</p>"
+      +"<table style=\"width:100%;border-collapse:collapse;font-size:12px\">"
+      +mkFRow("Razão social",v("as_razao"))
+      +mkFRow("CNPJ",v("as_cnpj"))
+      +mkFRow("Telefone",v("as_tel"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Representante legal (DocuSign)</td></tr>"
+      +mkFRow("Nome",v("as_rl_nome"))
+      +mkFRow("E-mail",v("as_rl_email"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Testemunha (DocuSign)</td></tr>"
+      +mkFRow("Nome",v("as_test_nome"))
+      +mkFRow("E-mail",v("as_test_email"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Acesso à plataforma</td></tr>"
+      +mkFRow("Nome — site Assim",v("as_site_nome"))
+      +mkFRow("E-mail — site Assim",v("as_site_email"))
+      +mkFRow("Nome — plataforma online",v("as_plat_nome"))
+      +mkFRow("E-mail — plataforma online",v("as_plat_email"))
+      +"</table></div>";
+  } else if(d.form==="leve"){
+    formTxt="PARTICIONAMENTO LEVE SAÚDE (Opção "+opcaoSel+")\nCorretora: "+v("cor_razao")+" | CNPJ: "+v("cor_cnpj")+"\nBanco: "+v("cor_banco")+" | Agência: "+v("cor_ag")+" | Conta: "+v("cor_cc")+"\nCidade: "+v("form_cidade")+" | Data: "+v("form_data");
+    formHtml="<div style=\"margin-top:14px;border-top:1px solid #ede0f2;padding-top:12px\">"
+      +"<p style=\"margin:0 0 10px;font-weight:700;color:#4A2050;font-size:13px\">📋 Particionamento — Leve Saúde (Opção "+opcaoSel+")</p>"
+      +"<table style=\"width:100%;border-collapse:collapse;font-size:12px\">"
+      +mkFRow("Razão social",v("cor_razao"))
+      +mkFRow("CNPJ",v("cor_cnpj"))
+      +mkFRow("Banco",v("cor_banco"))
+      +mkFRow("Agência",v("cor_ag"))
+      +mkFRow("Conta corrente",v("cor_cc"))
+      +mkFRow("Cidade",v("form_cidade"))
+      +mkFRow("Data",v("form_data"))
+      +"</table></div>";
+  } else if(d.form==="medsênior"){
+    formTxt="DADOS MEDSÊNIOR\nConcessionária: "+v("med_conc_razao")+" | Código: "+v("med_conc_codigo")+" | CNPJ: "+v("med_conc_cnpj")+"\nBanco: "+v("med_conc_banco")+" | Agência: "+v("med_conc_ag")+" | Conta: "+v("med_conc_cc")+"\nTelefone: "+v("med_conc_tel")+" | E-mail: "+v("med_conc_email")+"\nRepresentante: "+v("rl_nome")+" | CPF: "+v("rl_cpf")+" | Nasc: "+v("rl_nasc")+" | E-mail: "+v("rl_email")+"\nTestemunha: "+v("test_nome")+" | CPF: "+v("test_cpf")+" | Nasc: "+v("test_nasc")+" | E-mail: "+v("test_email")+"\nResp. NF: "+v("nf_nome")+" | CPF: "+v("nf_cpf")+" | Nasc: "+v("nf_nasc")+" | E-mail: "+v("nf_email")+"\nTelefone: "+v("tel_fixo");
+    formHtml="<div style=\"margin-top:14px;border-top:1px solid #ede0f2;padding-top:12px\">"
+      +"<p style=\"margin:0 0 10px;font-weight:700;color:#4A2050;font-size:13px\">📋 Dados — MedSênior</p>"
+      +"<table style=\"width:100%;border-collapse:collapse;font-size:12px\">"
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Concessionária (Corretor)</td></tr>"
+      +mkFRow("Razão social",v("med_conc_razao"))
+      +mkFRow("Código",v("med_conc_codigo"))
+      +mkFRow("CNPJ",v("med_conc_cnpj"))
+      +mkFRow("Banco",v("med_conc_banco"))
+      +mkFRow("Agência",v("med_conc_ag"))
+      +mkFRow("Conta corrente",v("med_conc_cc"))
+      +mkFRow("Telefone",v("med_conc_tel"))
+      +mkFRow("E-mail",v("med_conc_email"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Representante legal</td></tr>"
+      +mkFRow("Nome",v("rl_nome"))
+      +mkFRow("CPF",v("rl_cpf"))
+      +mkFRow("Nascimento",v("rl_nasc"))
+      +mkFRow("E-mail",v("rl_email"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Testemunha</td></tr>"
+      +mkFRow("Nome",v("test_nome"))
+      +mkFRow("CPF",v("test_cpf"))
+      +mkFRow("Nascimento",v("test_nasc"))
+      +mkFRow("E-mail",v("test_email"))
+      +"<tr><td colspan=\"2\" style=\"padding:8px 0 4px;font-weight:700;color:#7B3A6E;font-size:11px;text-transform:uppercase;letter-spacing:.5px\">Resp. comissão / NF</td></tr>"
+      +mkFRow("Nome",v("nf_nome"))
+      +mkFRow("CPF",v("nf_cpf"))
+      +mkFRow("Nascimento",v("nf_nasc"))
+      +mkFRow("E-mail",v("nf_email"))
+      +mkFRow("Telefone fixo",v("tel_fixo"))
+      +"</table></div>";
+  }
+
+  if(formTxt) checklist += "\n\n" + formTxt;
+  if(formHtml) checklistHtml += formHtml;
+
+  // ─── Fim coleta formulários ───────────────────────────────────────────────
+
+  var data_envio=new Date().toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"});
+
+  // Parâmetros comuns
+  var params_assessoria={
+    corretor_nome:  cor.nome,
+    corretor_sis:   cor.sis,
+    corretor_tel:   cor.tel,
+    corretor_email: cor.email,
+    corretor_supervisor: cor.supervisor,
+    operadora:      d.nome,
+    checklist:      checklist,
+    checklist_html: checklistHtml,
+    data_envio:     data_envio,
+    observacoes:    obs||"Nenhuma"
+  };
+  var params_corretor={
+    corretor_nome:  cor.nome,
+    corretor_sis:   cor.sis,
+    operadora:      d.nome,
+    checklist:      checklist,
+    checklist_html: checklistHtml,
+    data_envio:     data_envio,
+    to_email:       cor.email,
+    mensagem_status: "Em breve entraremos em contato para informar o andamento do processo."
+  };
+
+  // Mostrar overlay
+  fecharModal();
+  document.getElementById("btn-confirm").disabled=true;
+  document.getElementById("btn-send").disabled=true;
+  var overlay=document.getElementById("sending-overlay");
+  var spinner=document.getElementById("sending-spinner");
+  var successIcon=document.getElementById("success-icon");
+  var sendingText=document.getElementById("sending-text");
+  overlay.classList.add("open");
+  sendingText.textContent="Enviando arquivos...";
+  spinner.style.display="block";
+  successIcon.style.display="none";
+
+  // Upload arquivos para Cloudinary
+  uploadArquivosCloudinary().then(function(linksArquivos){
+    if(linksArquivos){
+      params_assessoria.checklist += "\n\nARQUIVOS ANEXADOS:\n"+linksArquivos;
+      params_corretor.checklist   += "\n\nARQUIVOS ANEXADOS:\n"+linksArquivos;
+      // Montar HTML com botões clicáveis para cada arquivo
+      var linksHtml = "<div style=\"margin-top:14px;border-top:1px solid #ede0f2;padding-top:12px\">";
+      linksHtml += "<p style=\"margin:0 0 10px;font-weight:700;color:#4A2050;font-size:13px\">📎 Arquivos anexados</p>";
+      linksArquivos.split("\n").forEach(function(linha){
+        if(!linha.trim()) return;
+        var partes = linha.split(" → ");
+        var nome = partes[0] || "";
+        var url  = partes[1] || "";
+        if(url && !url.startsWith("(erro")){
+          linksHtml += "<div style=\"margin-bottom:8px\">";
+          linksHtml += "<a href=\""+url+"\" target=\"_blank\" style=\"display:inline-block;background:#7B3A6E;color:#fff;text-decoration:none;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;margin-bottom:3px\">⬇ "+nome+"</a>";
+          linksHtml += "</div>";
+        } else {
+          linksHtml += "<p style=\"font-size:12px;color:#c0392b;margin:4px 0\">⚠ "+nome+" — "+(url||"erro no upload")+"</p>";
+        }
+      });
+      linksHtml += "</div>";
+      params_assessoria.checklist_html += linksHtml;
+      params_corretor.checklist_html   += linksHtml;
+    }
+    sendingText.textContent="Enviando e-mail...";
+
+  // Enviar para assessoria
+  console.log("Enviando para template:", TEMPLATE_ASSESSORIA, "service:", EMAILJS_SERVICE_ID);
+  emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_ASSESSORIA, params_assessoria)
+    .then(function(){
+      // Enviar cópia para corretor
+      return emailjs.send(EMAILJS_SERVICE_ID, TEMPLATE_CORRETOR, params_corretor);
+    })
+    .then(function(){
+      spinner.style.display="none";
+      successIcon.style.display="block";
+      sendingText.textContent="Processo enviado com sucesso!";
+      setTimeout(function(){
+        overlay.classList.remove("open");
+        document.getElementById("btn-send").disabled=false;
+        document.getElementById("btn-confirm").disabled=false;
+        // Limpar checklist — somente da operadora que foi enviada, preservando progresso de outras operadoras
+        var opEnviada=filtroDoc;
+        if(dados[opEnviada]&&dados[opEnviada].cats){
+          dados[opEnviada].cats.forEach(function(cat){
+            cat.docs.forEach(function(doc,i){
+              var id=cat.id+"_"+i;
+              delete checked[id];delete arquivos[id];delete textos[id];
+            });
+          });
+        }
+        delete estadoPorOp[opEnviada];
+        renderDocs();
+        // Limpar obs
+        document.getElementById("e-obs").value="";
+        var nc=document.getElementById("notas-corretor");if(nc)nc.value="";
+        alert("✅ Processo enviado!\n\nEm breve entraremos em contato para informar o andamento do processo.");
+      },2000);
+    })
+    .catch(function(err){
+      overlay.classList.remove("open");
+      document.getElementById("btn-send").disabled=false;
+      document.getElementById("btn-confirm").disabled=false;
+      alert("Erro ao enviar. Verifique sua conexão e tente novamente.\n\n"+JSON.stringify(err));
+    });
+  }); // fim uploadArquivosCloudinary
+}
+
+// ─── SEGUROS UNIMED ───────────────────────────────────────────────────────────
+function renderUnimed(){
+  var steps=[
+    {n:1,t:"Acesse o site da Seguros Unimed",d:"Clique em 'Seja um corretor'.",tag:"tag-c",tagT:"Ação do corretor",link:"https://www.segurosunimed.com.br/"},
+    {n:2,t:"Preencha o questionário e anexe os documentos",d:"Complete todos os campos obrigatórios.",tag:"tag-c",tagT:"Ação do corretor"},
+    {n:3,t:"Campo 'Vinculado a Assessoria e Plataforma'",d:"Selecione sempre NÃO.",tag:"tag-a",tagT:"Atenção obrigatória"},
+    {n:4,t:"Acompanhe pendências pelo site",d:"Prazo: até 10 dias úteis.",tag:"tag-p",tagT:"Até 10 dias úteis"},
+    {n:5,t:"Receba o código por e-mail",d:"Após aprovação, código enviado ao corretor.",tag:"tag-c",tagT:"Código ao corretor"},
+    {n:6,t:"Envie o código para a Affinity",d:"Quando o código estiver gerado, envie para assessoria@affinitycorretora.com.br com as informações abaixo.",tag:"tag-a",tagT:"Etapa obrigatória"}
+  ];
+  var h="<div class=\"op-label\"><span class=\"op-badge-pill\">Seguros Unimed</span><span class=\"op-title\">Passo a passo</span></div>";
+  h+="<div class=\"steps-card\"><div class=\"steps-head\"><i class=\"ti ti-list-check\"></i>Fluxo de cadastro</div>";
+  steps.forEach(function(s){h+="<div class=\"step-item\"><div class=\"step-num\">"+s.n+"</div><div class=\"step-body\"><div class=\"step-title\">"+s.t+"</div><div class=\"step-desc\">"+s.d+"</div><span class=\"step-tag "+s.tag+"\">"+s.tagT+"</span>"+(s.link?"<br><a class=\"btn-site\" href=\""+s.link+"\" target=\"_blank\"><i class=\"ti ti-external-link\"></i>Acessar site</a>":"")+"</div></div>";});
+  h+="</div><div class=\"com-card\"><div class=\"com-head\"><i class=\"ti ti-speakerphone\"></i>Comunicado interno</div>";
+  h+="<div class=\"ai ai-gold\"><i class=\"ti ti-chart-bar\"></i><div><div style=\"font-size:11px;font-weight:700;color:var(--gold-dark)\">Comissão</div><div class=\"cv\">300% <span>agenciamento</span> + 2% <span>vitalício</span></div></div></div>";
+  h+="<div class=\"ai ai-red\"><i class=\"ti ti-alert-triangle\"></i><div><strong>\"Vinculado a Assessoria e Plataforma\"</strong> → sempre <strong>NÃO</strong>.</div></div>";
+  h+="<div class=\"ai ai-pur\"><i class=\"ti ti-mail\"></i><div>Código para: <strong>assessoria@affinitycorretora.com.br</strong></div></div>";
+  h+="<div class=\"ai ai-pur\"><i class=\"ti ti-clock\"></i><div>Prazo: <strong>até 10 dias úteis</strong></div></div></div>";
+  return h;
+}
+
+// ─── FORMULÁRIOS ──────────────────────────────────────────────────────────────
+function ffIn(id,label,ph,type){type=type||"text";return "<div class=\"ff\"><label>"+label+"</label><input type=\""+type+"\" id=\""+id+"\" placeholder=\""+ph+"\"></div>";}
+
+function ffSel(id,label,opts){
+  var h="<div class=\"cf\"><label class=\"cl\">"+label+"</label><select id=\""+id+"\" class=\"ci\">";
+  h+="<option value=\"\">Selecione...</option>";
+  opts.forEach(function(o){h+="<option value=\""+o+"\">"+o+"</option>";});
+  h+="</select></div>";
+  return h;
+}
+var amSocioNextIdx=1;
+function socioBlockHTML(i){
+  return "<div class=\"socio-block\" data-socio-idx=\""+i+"\">"
+    +"<div class=\"fgt\" style=\"display:flex;justify-content:space-between;align-items:center\"><span>Sócio</span><button type=\"button\" class=\"btn-rm-socio\" data-rm-socio=\""+i+"\" style=\"background:none;border:none;color:#c62828;font-size:11px;cursor:pointer;font-weight:700\">✕ remover</button></div>"
+    +ffIn("am_resp_nome_"+i,"Nome completo","")
+    +"<div class=\"fg2\">"+ffIn("am_resp_cpf_"+i,"CPF","000.000.000-00")+ffIn("am_resp_rg_"+i,"RG","")+"</div>"
+    +ffIn("am_resp_email_"+i,"E-mail nominal","","email")+ffIn("am_resp_tel_"+i,"Telefone","(00) 00000-0000")
+    +"</div>";
+}
+function atualizarBotoesRemoverSocio(){
+  var blocks=document.querySelectorAll("#am-socios [data-socio-idx]");
+  blocks.forEach(function(b){
+    var btn=b.querySelector("[data-rm-socio]");
+    if(btn)btn.style.display=blocks.length>1?"inline":"none";
+  });
+}
+function limparEstadoFormOperadora(){
+  if(!filtroDoc)return;
+  var est=getEstado(filtroDoc);
+  est.formValues={};
+  est.amSocioIdxs=[0];
+}
+function restaurarFormValues(){
+  if(!filtroDoc)return;
+  var est=getEstado(filtroDoc);
+  var d=dados[filtroDoc];
+  if(d&&d.form==="amil"&&est.amSocioIdxs&&est.amSocioIdxs.length>1){
+    var cont=document.getElementById("am-socios");
+    if(cont){
+      for(var k=1;k<est.amSocioIdxs.length;k++){
+        cont.insertAdjacentHTML("beforeend",socioBlockHTML(est.amSocioIdxs[k]));
+      }
+      amSocioNextIdx=Math.max.apply(null,est.amSocioIdxs)+1;
+    }
+  }
+  Object.keys(est.formValues).forEach(function(id){
+    var el=document.getElementById(id);
+    if(el)el.value=est.formValues[id];
+  });
+}
+function renderFormAmil(){
+  amSocioNextIdx=1;
+  var h="<div class=\"form-card\"><div class=\"form-card-head\"><i class=\"ti ti-forms\"></i>Dados para Amil</div>";
+  h+="<div class=\"fgt\">Corretora</div>"+ffIn("am_razao","Razão social","");
+  h+="<div class=\"fg2\">"+ffIn("am_cnpj","CNPJ","00.000.000/0001-00")+ffIn("am_ccm","CCM / Inscrição municipal","SP")+ffIn("am_banco","Banco","")+ffIn("am_ag","Agência","0000")+ffIn("am_cc","Conta corrente","")+ffIn("am_seg","Segmento","PME / PF / PJ")+ffIn("am_aliq","Alíquota *","Ex: 2%")+ffSel("am_iss","ISS retido por *",["Amil","Corretora"])+"</div>";
+  h+="<div class=\"fgt\">Responsável / Sócio(s) administrador(es)</div>";
+  h+="<div id=\"am-socios\">"+socioBlockHTML(0)+"</div>";
+  h+="<button type=\"button\" class=\"add-doc-btn\" id=\"btn-add-socio\"><i class=\"ti ti-plus\"></i>Adicionar sócio</button>";
+  h+="<div class=\"fgt\">Testemunha</div>"+ffIn("am_test_nome","Nome completo","");
+  h+="<div class=\"fg2\">"+ffIn("am_test_cpf","CPF","000.000.000-00")+ffIn("am_test_email","E-mail","","email")+"</div>";
+  h+="<div class=\"fgt\">Carta Anticorrupção</div><div class=\"fg2\">"+ffIn("am_local","Local","São Paulo / SP")+ffIn("am_data","Data","DD/MM/AAAA")+"</div>";
+  h+="<div class=\"form-actions\"><button class=\"btn-clear\" data-clear=\"amil\">Limpar</button><button class=\"btn-copy\" data-copy=\"amil\"><i class=\"ti ti-copy\"></i>Copiar</button></div>";
+  h+="<div class=\"copy-ok\" id=\"cp-amil\"><i class=\"ti ti-check\"></i> Copiado!</div></div>";
+  return h;
+}
+window.limpar_amil=function(){
+  ["am_razao","am_cnpj","am_ccm","am_banco","am_ag","am_cc","am_seg","am_aliq","am_iss","am_test_nome","am_test_cpf","am_test_email","am_local","am_data"].forEach(function(id){var el=document.getElementById(id);if(el)el.value="";});
+  var cont=document.getElementById("am-socios");
+  if(cont){amSocioNextIdx=1;cont.innerHTML=socioBlockHTML(0);atualizarBotoesRemoverSocio();}
+  limparEstadoFormOperadora();
+};
+window.copiar_amil=function(){
+  var v=function(id){var el=document.getElementById(id);return el?el.value||"—":"—";};
+  var txt="DADOS AMIL\nRazão: "+v("am_razao")+"\nCNPJ: "+v("am_cnpj")+" CCM: "+v("am_ccm")+" Segmento: "+v("am_seg")+" Alíquota: "+v("am_aliq")+" ISS: "+v("am_iss")+"\nBanco: "+v("am_banco")+" Ag: "+v("am_ag")+" CC: "+v("am_cc");
+  document.querySelectorAll("#am-socios [data-socio-idx]").forEach(function(b,n){
+    var idx=b.dataset.socioIdx;
+    txt+="\nSócio "+(n+1)+": "+v("am_resp_nome_"+idx)+" CPF: "+v("am_resp_cpf_"+idx)+" RG: "+v("am_resp_rg_"+idx)+" E-mail: "+v("am_resp_email_"+idx)+" Tel: "+v("am_resp_tel_"+idx);
+  });
+  txt+="\nTestemunha: "+v("am_test_nome")+" CPF: "+v("am_test_cpf")+" "+v("am_test_email")+"\nLocal: "+v("am_local")+" Data: "+v("am_data");
+  navigator.clipboard.writeText(txt).then(function(){var ok=document.getElementById("cp-amil");if(ok){ok.style.display="block";setTimeout(function(){ok.style.display="none";},3000);}});
+};
+
+
+function renderFormAssim(){
+  var h="<div class=\"form-card\"><div class=\"form-card-head\"><i class=\"ti ti-forms\"></i>Ficha cadastral — Assim Saúde</div>";
+  h+="<div class=\"fgt\">Dados da corretora</div>"+ffIn("as_razao","Razão social","");
+  h+="<div class=\"fg2\">"+ffIn("as_cnpj","CNPJ","")+ffIn("as_tel","Telefone","")+"</div>";
+  h+="<div class=\"fgt\">Representante legal (DocuSign)</div>"+ffIn("as_rl_nome","Nome","")+ffIn("as_rl_email","E-mail","","email");
+  h+="<div class=\"fgt\">Testemunha (DocuSign)</div>"+ffIn("as_test_nome","Nome","")+ffIn("as_test_email","E-mail","","email");
+  h+="<div class=\"fgt\">Acesso à plataforma</div>"+ffIn("as_site_nome","Nome — site Assim","")+ffIn("as_site_email","E-mail","","email")+ffIn("as_plat_nome","Nome — plataforma online","")+ffIn("as_plat_email","E-mail","","email");
+  h+="<div class=\"form-actions\"><button class=\"btn-clear\" data-clear=\"assim\">Limpar</button><button class=\"btn-copy\" data-copy=\"assim\"><i class=\"ti ti-copy\"></i>Copiar</button></div>";
+  h+="<div class=\"copy-ok\" id=\"cp-assim\"><i class=\"ti ti-check\"></i> Copiado!</div></div>";
+  return h;
+}
+window.limpar_assim=function(){["as_razao","as_cnpj","as_tel","as_rl_nome","as_rl_email","as_test_nome","as_test_email","as_site_nome","as_site_email","as_plat_nome","as_plat_email"].forEach(function(id){var el=document.getElementById(id);if(el)el.value="";});limparEstadoFormOperadora();};
+window.copiar_assim=function(){
+  var v=function(id){var el=document.getElementById(id);return el?el.value||"—":"—";};
+  var txt="FICHA — ASSIM SAÚDE\nRazão: "+v("as_razao")+" CNPJ: "+v("as_cnpj")+"\nRepresentante: "+v("as_rl_nome")+" | "+v("as_rl_email")+"\nTestemunha: "+v("as_test_nome")+" | "+v("as_test_email")+"\nLogin Assim: "+v("as_site_nome")+" | "+v("as_site_email")+"\nLogin Plataforma: "+v("as_plat_nome")+" | "+v("as_plat_email");
+  navigator.clipboard.writeText(txt).then(function(){var ok=document.getElementById("cp-assim");if(ok){ok.style.display="block";setTimeout(function(){ok.style.display="none";},3000);}});
+};
+
+function renderFormLeve(){
+  var h="<div class=\"form-card\"><div class=\"form-card-head\"><i class=\"ti ti-forms\"></i>Formulário de Particionamento — Leve Saúde</div>";
+  h+="<div class=\"fgt\">Opção</div><div class=\"opcao-row\"><button class=\"opcao-btn sel\" data-opsel=\"1\">Opção 1 (recomendada)</button></div>";
+  h+="<div id=\"tabela-part\"></div>";
+  h+="<div class=\"fgt\">Corretora</div>"+ffIn("cor_razao","Razão social","");
+  h+="<div class=\"fg2\">"+ffIn("cor_cnpj","CNPJ","")+ffIn("cor_banco","Banco","")+ffIn("cor_ag","Agência","0000")+ffIn("cor_cc","Conta corrente","")+"</div>";
+  h+="<div class=\"fgt\">Repasse (Affinity)</div>"+ffIn("rep_razao","Razão social","F8 Corretora de Seg de Vida e Benefícios Ltda EPP");
+  h+="<div class=\"fg2\">"+ffIn("rep_cnpj","CNPJ","21.127.795/0001-73")+ffIn("form_cidade","Cidade","Rio de Janeiro")+ffIn("form_data","Data","DD/MM/AAAA")+"</div>";
+  h+="<div class=\"form-actions\"><button class=\"btn-clear\" data-clear=\"leve\">Limpar</button><button class=\"btn-copy\" data-copy=\"leve\"><i class=\"ti ti-copy\"></i>Copiar</button></div>";
+  h+="<div class=\"copy-ok\" id=\"cp-leve\"><i class=\"ti ti-check\"></i> Copiado!</div></div>";
+  return h;
+}
+function renderTabPart(){
+  var op=opcaoSel;
+  function mkT(rows){var t="<table class=\"cmt\"><thead><tr><th class=\"left\" style=\"width:55%\">Parcela</th><th>% Corretora</th><th>% Repasse</th></tr></thead><tbody>";rows.forEach(function(r){t+="<tr><td class=\"left\">"+r[0]+"</td><td class=\"hi\">"+r[1]+"</td><td class=\"hi\">"+r[2]+"</td></tr>";});return t+"</tbody></table>";}
+  var pf=[["100% da 1ª","–","100%"],["50% da 2ª","–","50%"],["3% a partir da 3ª",op===1?"1%":"–",op===1?"2%":"3%"]];
+  var pme=[["100% da 1ª","–","100%"],["50% da 2ª","–","50%"],["25% da 3ª","–","25%"],["25% da 4ª","–","25%"],["3% a partir da 5ª",op===1?"1%":"–",op===1?"2%":"3%"]];
+  var el=document.getElementById("tabela-part");
+  if(el)el.innerHTML="<p style=\"font-size:11px;font-weight:700;color:var(--purple);margin-bottom:4px\">Individual/Familiar</p>"+mkT(pf)+"<p style=\"font-size:11px;font-weight:700;color:var(--purple);margin:8px 0 4px\">Empresarial</p>"+mkT(pme);
+}
+window.limpar_leve=function(){["cor_razao","cor_cnpj","cor_banco","cor_ag","cor_cc","form_cidade","form_data"].forEach(function(id){var el=document.getElementById(id);if(el)el.value="";});limparEstadoFormOperadora();};
+window.copiar_leve=function(){
+  var v=function(id){var el=document.getElementById(id);return el?el.value||"—":"—";};
+  var txt="PARTICIONAMENTO (Opção "+opcaoSel+") — LEVE SAÚDE\nCorretora: "+v("cor_razao")+" CNPJ: "+v("cor_cnpj")+"\nBanco: "+v("cor_banco")+" Ag: "+v("cor_ag")+" CC: "+v("cor_cc")+"\nLocal: "+v("form_cidade")+" Data: "+v("form_data");
+  navigator.clipboard.writeText(txt).then(function(){var ok=document.getElementById("cp-leve");if(ok){ok.style.display="block";setTimeout(function(){ok.style.display="none";},3000);}});
+};
+
+function renderFormMed(){
+  var h="<div class=\"form-card\"><div class=\"form-card-head\"><i class=\"ti ti-forms\"></i>Dados — MedSênior</div>";
+  h+="<div class=\"fgt\">Concessionária (Corretor)</div>"+ffIn("med_conc_razao","Razão social da concessionária","");
+  h+="<div class=\"fg2\">"+ffIn("med_conc_codigo","Código da concessionária","")+ffIn("med_conc_cnpj","CNPJ","")+"</div>";
+  h+="<div class=\"fg3\">"+ffIn("med_conc_banco","Banco","")+ffIn("med_conc_ag","Agência","")+ffIn("med_conc_cc","Conta corrente","")+"</div>";
+  h+="<div class=\"fg2\">"+ffIn("med_conc_tel","Telefone","")+ffIn("med_conc_email","E-mail","","email")+"</div>";
+  h+="<div class=\"fgt\">Representante legal</div>"+ffIn("rl_nome","Nome","");
+  h+="<div class=\"fg2\">"+ffIn("rl_email","E-mail","","email")+ffIn("rl_cpf","CPF","")+ffIn("rl_nasc","Nascimento","DD/MM/AAAA")+"</div>";
+  h+="<div class=\"fgt\">Testemunha</div>"+ffIn("test_nome","Nome","");
+  h+="<div class=\"fg2\">"+ffIn("test_email","E-mail","","email")+ffIn("test_cpf","CPF","")+ffIn("test_nasc","Nascimento","DD/MM/AAAA")+"</div>";
+  h+="<div class=\"fgt\">Resp. comissão / NF</div>"+ffIn("nf_nome","Nome","");
+  h+="<div class=\"fg2\">"+ffIn("nf_email","E-mail","","email")+ffIn("nf_cpf","CPF","")+ffIn("nf_nasc","Nascimento","DD/MM/AAAA")+"</div>";
+  h+="<div class=\"fgt\">Contato</div>"+ffIn("tel_fixo","Telefone fixo","(00) 0000-0000");
+  h+="<div class=\"form-actions\"><button class=\"btn-clear\" data-clear=\"med\">Limpar</button><button class=\"btn-copy\" data-copy=\"med\"><i class=\"ti ti-copy\"></i>Copiar</button></div>";
+  h+="<div class=\"copy-ok\" id=\"cp-med\"><i class=\"ti ti-check\"></i> Copiado!</div></div>";
+  return h;
+}
+window.limpar_med=function(){["med_conc_razao","med_conc_codigo","med_conc_cnpj","med_conc_banco","med_conc_ag","med_conc_cc","med_conc_tel","med_conc_email","rl_nome","rl_email","rl_cpf","rl_nasc","test_nome","test_email","test_cpf","test_nasc","nf_nome","nf_email","nf_cpf","nf_nasc","tel_fixo"].forEach(function(id){var el=document.getElementById(id);if(el)el.value="";});limparEstadoFormOperadora();};
+window.copiar_med=function(){
+  var v=function(id){var el=document.getElementById(id);return el?el.value||"—":"—";};
+  var txt="DADOS MEDSÊNIOR\nConcessionária: "+v("med_conc_razao")+" | Código: "+v("med_conc_codigo")+" | CNPJ: "+v("med_conc_cnpj")+"\nBanco: "+v("med_conc_banco")+" Ag: "+v("med_conc_ag")+" CC: "+v("med_conc_cc")+"\nTel: "+v("med_conc_tel")+" E-mail: "+v("med_conc_email")+"\nRepresentante: "+v("rl_nome")+" "+v("rl_email")+" CPF: "+v("rl_cpf")+" Nasc: "+v("rl_nasc")+"\nTestemunha: "+v("test_nome")+" "+v("test_email")+" CPF: "+v("test_cpf")+" Nasc: "+v("test_nasc")+"\nResp. NF: "+v("nf_nome")+" "+v("nf_email")+" CPF: "+v("nf_cpf")+" Nasc: "+v("nf_nasc")+"\nTel: "+v("tel_fixo");
+  navigator.clipboard.writeText(txt).then(function(){var ok=document.getElementById("cp-med");if(ok){ok.style.display="block";setTimeout(function(){ok.style.display="none";},3000);}});
+};
+
+function renderFormAlice(){
+  var h="<div class=\"form-card\"><div class=\"form-card-head\"><i class=\"ti ti-forms\"></i>Dados obrigatórios — Alice</div>";
+  h+="<div class=\"fgt\">Responsável Financeiro</div>"+ffIn("al_fin_nome","Nome","Nome completo");
+  h+="<div class=\"fg2\">"+ffIn("al_fin_cpf","CPF","000.000.000-00")+ffIn("al_fin_nasc","Data de nascimento","DD/MM/AAAA")+"</div>";
+  h+="<div class=\"fg2\">"+ffIn("al_fin_email","E-mail","","email")+ffIn("al_fin_tel","Telefone celular","(00) 00000-0000")+"</div>";
+  h+="<div class=\"fgt\">Testemunha</div>"+ffIn("al_test_nome","Nome","Nome completo");
+  h+="<div class=\"fg2\">"+ffIn("al_test_cpf","CPF","000.000.000-00")+ffIn("al_test_nasc","Data de nascimento","DD/MM/AAAA")+"</div>";
+  h+="<div class=\"fg2\">"+ffIn("al_test_email","E-mail","","email")+ffIn("al_test_tel","Telefone celular","(00) 00000-0000")+"</div>";
+  h+="<div class=\"fgt\">Responsável pela Empresa</div>"+ffIn("al_emp_nome","Nome","Nome completo");
+  h+="<div class=\"fg2\">"+ffIn("al_emp_cpf","CPF","000.000.000-00")+ffIn("al_emp_nasc","Data de nascimento","DD/MM/AAAA")+"</div>";
+  h+="<div class=\"fg2\">"+ffIn("al_emp_email","E-mail","","email")+ffIn("al_emp_tel","Telefone celular","(00) 00000-0000")+"</div>";
+  h+="<div class=\"form-actions\"><button class=\"btn-clear\" data-clear=\"alice\">Limpar</button><button class=\"btn-copy\" data-copy=\"alice\"><i class=\"ti ti-copy\"></i>Copiar</button></div>";
+  h+="<div class=\"copy-ok\" id=\"cp-alice\"><i class=\"ti ti-check\"></i> Copiado!</div></div>";
+  return h;
+}
+window.limpar_alice=function(){["al_fin_nome","al_fin_cpf","al_fin_nasc","al_fin_email","al_fin_tel","al_test_nome","al_test_cpf","al_test_nasc","al_test_email","al_test_tel","al_emp_nome","al_emp_cpf","al_emp_nasc","al_emp_email","al_emp_tel"].forEach(function(id){var el=document.getElementById(id);if(el)el.value="";});limparEstadoFormOperadora();};
+window.copiar_alice=function(){
+  var v=function(id){var el=document.getElementById(id);return el?el.value||"—":"—";};
+  var txt="DADOS ALICE\nResponsável Financeiro: "+v("al_fin_nome")+" | CPF: "+v("al_fin_cpf")+" | Nasc: "+v("al_fin_nasc")+" | E-mail: "+v("al_fin_email")+" | Tel: "+v("al_fin_tel");
+  txt+="\nTestemunha: "+v("al_test_nome")+" | CPF: "+v("al_test_cpf")+" | Nasc: "+v("al_test_nasc")+" | E-mail: "+v("al_test_email")+" | Tel: "+v("al_test_tel");
+  txt+="\nResponsável pela Empresa: "+v("al_emp_nome")+" | CPF: "+v("al_emp_cpf")+" | Nasc: "+v("al_emp_nasc")+" | E-mail: "+v("al_emp_email")+" | Tel: "+v("al_emp_tel");
+  navigator.clipboard.writeText(txt).then(function(){var ok=document.getElementById("cp-alice");if(ok){ok.style.display="block";setTimeout(function(){ok.style.display="none";},3000);}});
+};
+
+renderComm();
+</script>
+</body>
+</html>
